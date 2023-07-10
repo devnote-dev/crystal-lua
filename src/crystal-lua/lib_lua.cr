@@ -24,6 +24,15 @@ lib LibLua
   end
 
   fun new_state = luaL_newstate : State
-  fun version = lua_version(l : State) : LibC::Int
+  fun version = lua_version(l : State) : LibC::Double
   fun close = lua_close(l : State) : Void
+
+  fun push_nil = lua_pushnil(l : State) : Void
+  fun push_integer = lua_pushinteger(l : State, i : LibC::Long) : Void
+  fun push_number = lua_pushnumber(l : State, n : LibC::Double) : Void
+  fun push_string = lua_pushstring(l : State, s : LibC::Char*) : Void
+  fun push_bool = lua_pushboolean(l : State, b : LibC::Int) : Void
+
+  fun create_table = lua_createtable(l : State, narr : LibC::Int, nrec : LibC::Int) : Void
+  fun set_table = lua_settable(l : State, idx : LibC::Int) : Void
 end

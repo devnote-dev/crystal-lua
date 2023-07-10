@@ -1,0 +1,81 @@
+module Lua
+  class Stack
+    @state : LibLua::State
+    getter? closed : Bool
+
+    def self.new(& : self ->) : self
+      this = new
+      yield this
+      this
+    end
+
+    def initialize
+      @state = LibLua.new_state
+
+      unless (ver = LibLua.version(@state)) >= 504
+        LibLua.close @state
+        raise "Lua version #{ver} not supported"
+      end
+
+      @closed = false
+    end
+
+    def close : Nil
+      return if closed?
+
+      LibLua.close @state
+      @closed = true
+    end
+
+    def finalize
+      close
+    end
+
+    def <<(object : _) : Nil
+      push object
+    end
+
+    def push(object : Nil) : Nil
+      LibLua.push_nil @state
+    end
+
+    def push(object : Int) : Nil
+      LibLua.push_integer @state, object
+    end
+
+    def push(object : Float) : Nil
+      LibLua.push_number @state, object
+    end
+
+    def push(object : String) : Nil
+      LibLua.push_string @state, object
+    end
+
+    def push(object : Bool) : Nil
+      LibLua.push_bool(@state, object ? 1 : 0)
+    end
+
+    def push(object : Symbol) : Nil
+      LibLua.push_string @state, object.to_s
+    end
+
+    def push(object : Array | Deque | Tuple | Set) : Nil
+      hash = object.to_a.map_with_index { |e, i| {i + 1, e} }.to_h
+      push_table hash, object.size, 0
+    end
+
+    def push(object : Hash | NamedTuple) : Nil
+      push_table object.to_h, 0, object.size
+    end
+
+    def push_table(hash : Hash, narr : Int32, nrec : Int32) : Nil
+      LibLua.create_table @state, narr, nrec
+
+      hash.each do |key, value|
+        push key
+        push value
+        LibLua.set_table @state, -3
+      end
+    end
+  end
+end

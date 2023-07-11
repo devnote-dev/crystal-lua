@@ -28,6 +28,9 @@ lib LibLua
   fun close = lua_close(l : State) : Void
   fun l_ref = luaL_ref(l : State, idx : LibC::Int) : LibC::Int
   fun l_unref = luaL_unref(l : State, idx : LibC::Int, ref : LibC::Int) : Void
+  fun l_load_string = luaL_loadstring(l : State, s : LibC::Char*) : LibC::Int
+  fun l_load_filex = luaL_loadfilex(l : State, name : LibC::Char*, mode : LibC::Char*) : LibC::Int
+  fun l_load_bufferx = luaL_loadbufferx(l : State, buf : LibC::Char*, s : LibC::SizeT, name : LibC::Char*, mode : LibC::Char*) : LibC::Int
 
   fun push_nil = lua_pushnil(l : State) : Void
   fun push_integer = lua_pushinteger(l : State, i : LibC::Long) : Void

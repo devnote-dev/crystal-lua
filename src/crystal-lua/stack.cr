@@ -34,13 +34,13 @@ module Lua
       close
     end
 
-    def run(buf : String, name : String? = nil)
+    def run(buf : String, name : String? = nil) : Lua::Value
       call = Call.new LibLua.l_load_bufferx(@state, buf, buf.size, name || buf.strip, nil)
       error call unless call.ok?
       call_and_return size
     end
 
-    def call_and_return(pos : Int, *args)
+    def call_and_return(pos : Int, *args) : Lua::Value
       error_pos = load_error_handler pos
       pos += 1 if error_pos != 0
       args.each { |a| push a }
@@ -49,7 +49,7 @@ module Lua
       error call unless call.ok?
 
       items = (pos..size).map { pop }
-      items.size > 1 ? items : items[0]
+      items.size > 1 ? items.sample : items[0]
     ensure
       remove if error_pos != 0
     end
@@ -133,7 +133,7 @@ module Lua
       index pos
     end
 
-    def index(pos : Int32)
+    def index(pos : Int32) : Lua::Value
       return nil if pos == 0
 
       case type_at(pos)
@@ -146,11 +146,11 @@ module Lua
       in .number?
         LibLua.to_numberx(@state, pos, nil)
       in .string?
-        LibLua.to_lstring(@state, pos, nil)
+        String.new LibLua.to_lstring(@state, pos, nil)
       in .table?
-        raise NotImplementedError.new "Table"
+        Table.new self, new_ref(pos)
       in .function?
-        raise NotImplementedError.new "Function"
+        Function.new self, new_ref(pos)
       in .user_data?
         raise NotImplementedError.new "Callable"
       in .thread?

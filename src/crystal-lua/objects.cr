@@ -44,4 +44,22 @@ module Lua
       end
     end
   end
+
+  class Table < Lua::Object
+    def [](index : Lua::Value) : Lua::Value
+      preload do |pos|
+        @stack.push index
+        LibLua.get_table @stack.@state, pos
+        @stack.pop
+      end
+    end
+
+    def []=(index : Lua::Value, value : Lua::Value)
+      preload do |pos|
+        @stack.push index
+        @stack.push value
+        LibLua.set_table @stack.@state, pos
+      end
+    end
+  end
 end

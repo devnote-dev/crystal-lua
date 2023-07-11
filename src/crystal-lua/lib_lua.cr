@@ -73,5 +73,7 @@ lib LibLua
 
   fun pcallk = lua_pcallk(l : State, na : LibC::Int, nr : LibC::Int, err : LibC::Int, ctx : LibC::Int, k : CFunction) : LibC::Int
 
+  fun next = lua_next(l : State, idx : LibC::Int) : LibC::Int
+
   fun rotate = lua_rotate(l : State, idx : LibC::Int, n : LibC::Int) : Void
 end

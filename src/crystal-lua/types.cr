@@ -1,4 +1,6 @@
 module Lua
+  alias Value = Nil | Bool | Float64 | String | Lua::Object | Lua::Reference
+
   enum Type
     NONE            = -1
     NIL

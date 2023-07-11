@@ -23,15 +23,15 @@ module Lua
       @closed = false
     end
 
+    def finalize
+      close
+    end
+
     def close : Nil
       return if closed?
 
       LibLua.close @state
       @closed = true
-    end
-
-    def finalize
-      close
     end
 
     def run(buf : String, name : String? = nil) : Lua::Value
@@ -54,12 +54,6 @@ module Lua
       remove if error_pos != 0
     end
 
-    def set_error_handler(chunk : String) : Nil
-      res = run chunk, "error handler"
-      raise "Error handler must return a function" unless res.is_a? Function
-      @error_handler = res
-    end
-
     def load_error_handler(pos : Int)
       if handler = @error_handler
         handler.copy_to_stack
@@ -69,6 +63,12 @@ module Lua
       else
         0
       end
+    end
+
+    def set_error_handler(chunk : String) : Nil
+      res = run chunk, "error handler"
+      raise "Error handler must return a function" unless res.is_a? Function
+      @error_handler = res
     end
 
     protected def error(call : Call, message : String? = nil, traceback : String? = nil) : NoReturn
@@ -129,7 +129,7 @@ module Lua
       end
     end
 
-    def [](pos : Int)
+    def [](pos : Int) : Lua::Value
       index pos
     end
 
@@ -156,6 +156,24 @@ module Lua
       in .thread?
         raise NotImplementedError.new "Coroutine"
       end
+    end
+
+    def size : Int
+      LibLua.get_top @state
+    end
+
+    def top : Lua::Value
+      index size
+    end
+
+    def pop : Lua::Value
+      top.try &.tap { remove }
+    end
+
+    def remove(n : Int = 1) : Nil
+      n = 0 if n < 0
+      n = size if n > size
+      LibLua.set_top(@state, -n - 1)
     end
 
     def type_at(pos : Int) : Type
@@ -204,35 +222,17 @@ module Lua
       {base, type}
     end
 
-    def new_ref(pos : Int)
+    def new_ref(pos : Int) : Int32
       LibLua.push_value @state, pos
       LibLua.l_ref @state, REGISTRY_INDEX
     end
 
-    def get_ref(ref : Int32)
+    def get_ref(ref : Int32) : Type
       Type.new LibLua.rawgeti(@state, REGISTRY_INDEX, ref)
     end
 
-    def unref(ref : Int32)
+    def unref(ref : Int32) : Nil
       LibLua.l_unref @state, REGISTRY_INDEX, ref
-    end
-
-    def size : Int
-      LibLua.get_top @state
-    end
-
-    def top
-      index size
-    end
-
-    def pop
-      top.try &.tap { remove }
-    end
-
-    def remove(n : Int = 1) : Nil
-      n = 0 if n < 0
-      n = size if n > size
-      LibLua.set_top(@state, -n - 1)
     end
   end
 end

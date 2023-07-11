@@ -29,14 +29,6 @@ module Lua
     end
   end
 
-  class Reference
-    @stack : Stack
-    getter ref : Void*
-
-    def initialize(@stack : Stack, @ref : Void*)
-    end
-  end
-
   class Function < Object
     def call(*args)
       preload do |pos|
@@ -60,6 +52,14 @@ module Lua
         @stack.push value
         LibLua.set_table @stack.@state, pos
       end
+    end
+  end
+
+  class Reference
+    @stack : Stack
+    getter ref : Void*
+
+    def initialize(@stack : Stack, @ref : Void*)
     end
   end
 end

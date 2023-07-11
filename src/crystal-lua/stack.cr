@@ -46,7 +46,7 @@ module Lua
       args.each { |a| push a }
 
       call = Call.new LibLua.pcallk(@state, args.size, -1, error_pos, 0, nil)
-      error call unless call.ok?
+      error call, pop unless call.ok?
 
       items = (pos..size).map { pop }
       items.size > 1 ? items.sample : items[0]
@@ -69,6 +69,17 @@ module Lua
       res = run chunk, "error handler"
       raise "Error handler must return a function" unless res.is_a? Function
       @error_handler = res
+    end
+
+    protected def error(call : Call, err : Lua::Value) : NoReturn
+      case err
+      when String
+        error call, err
+      when Table
+        error call, err["message"].as?(String), err["traceback"].as?(String)
+      else
+        error call
+      end
     end
 
     protected def error(call : Call, message : String? = nil, traceback : String? = nil) : NoReturn
@@ -214,6 +225,7 @@ module Lua
       LibLua.push_string @state, "__name"
       LibLua.get_table @state, -2
       type = index(-1).as(String)
+
       LibLua.push_string @state, "__crystal_base_type"
       LibLua.get_table @state, -3
       base = index(-1).as?(String)

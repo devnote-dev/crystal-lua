@@ -1,5 +1,9 @@
 module Lua
   class Error < Exception
+    getter traceback : String?
+
+    def initialize(@message : String?, @traceback : String? = nil)
+    end
   end
 
   class RuntimeError < Error

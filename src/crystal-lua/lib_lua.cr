@@ -66,8 +66,12 @@ lib LibLua
   fun get_field = lua_getfield(l : State, idx : LibC::Int, k : LibC::Char*) : Void
   fun set_table = lua_settable(l : State, idx : LibC::Int) : Void
 
+  fun rawgeti = lua_rawgeti(l : State, idx : LibC::Int, n : LibC::Int) : LibC::Int
+
   fun get_metatable = lua_getmetatable(l : State, idx : LibC::Int) : LibC::Int
   fun set_metatable = lua_setmetatable(l : State, idx : LibC::Int) : LibC::Int
 
   fun pcallk = lua_pcallk(l : State, na : LibC::Int, nr : LibC::Int, err : LibC::Int, ctx : LibC::Int, k : CFunction) : LibC::Int
+
+  fun rotate = lua_rotate(l : State, idx : LibC::Int, n : LibC::Int) : Void
 end

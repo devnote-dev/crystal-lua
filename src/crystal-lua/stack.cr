@@ -1,5 +1,7 @@
 module Lua
   class Stack
+    REGISTRY_INDEX = -1_001_000
+
     @state : LibLua::State
     getter? closed : Bool
 
@@ -151,6 +153,37 @@ module Lua
       LibLua.set_top @state, -4
 
       {base, type}
+    end
+
+    def new_ref(pos : Int)
+      LibLua.push_value @state, pos
+      LibLua.l_ref @state, REGISTRY_INDEX
+    end
+
+    def get_ref(ref : Int32)
+      Type.new LibLua.rawgeti(@state, REGISTRY_INDEX, ref)
+    end
+
+    def unref(ref : Int32)
+      LibLua.l_unref @state, REGISTRY_INDEX, ref
+    end
+
+    def size : Int
+      LibLua.get_top @state
+    end
+
+    def top
+      index size
+    end
+
+    def pop
+      top.try &.tap { remove }
+    end
+
+    def remove(n : Int = 1) : Nil
+      n = 0 if n < 0
+      n = size if n > size
+      LibLua.set_top(@state, -n - 1)
     end
   end
 end

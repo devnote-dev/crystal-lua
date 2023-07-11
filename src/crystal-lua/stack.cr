@@ -77,5 +77,80 @@ module Lua
         LibLua.set_table @state, -3
       end
     end
+
+    def [](pos : Int)
+      index pos
+    end
+
+    def index(pos : Int32)
+      return nil if pos == 0
+
+      case type_at(pos)
+      in .none?, Type::NIL
+        nil
+      in .boolean?
+        LibLua.to_boolean(@state, pos) == 1
+      in .light_user_data?
+        raise NotImplementedError.new "Reference"
+      in .number?
+        LibLua.to_numberx(@state, pos, nil)
+      in .string?
+        LibLua.to_lstring(@state, pos, nil)
+      in .table?
+        raise NotImplementedError.new "Table"
+      in .function?
+        raise NotImplementedError.new "Function"
+      in .user_data?
+        raise NotImplementedError.new "Callable"
+      in .thread?
+        raise NotImplementedError.new "Coroutine"
+      end
+    end
+
+    def type_at(pos : Int) : Type
+      Type.new LibLua.type(@state, pos)
+    end
+
+    def crystal_type_at(pos : Int) : String
+      if LibLua.get_metatable(@state, pos) == 0
+        raise "Index #{pos} is invalid or does not have a metatable"
+      end
+
+      LibLua.push_string @state, "__name"
+      LibLua.get_table @state, -2
+      type = index(-1).as(String)
+      LibLua.set_top @state, -3
+
+      type
+    end
+
+    def crystal_base_type_at(pos : Int) : String
+      if LibLua.get_metatable(@state, pos) == 0
+        raise "Index #{pos} is invalid or does not have a metatable"
+      end
+
+      LibLua.push_string @state, "__crystal_base_type"
+      LibLua.get_table @state, -2
+      type = index(-1).as(String)
+      LibLua.set_top @state, -3
+
+      type
+    end
+
+    def crystal_type_info_at(pos : Int) : {String?, String}
+      if LibLua.get_metatable(@state, pos) == 0
+        raise "Index #{pos} is invalid or does not have a metatable"
+      end
+
+      LibLua.push_string @state, "__name"
+      LibLua.get_table @state, -2
+      type = index(-1).as(String)
+      LibLua.push_string @state, "__crystal_base_type"
+      LibLua.get_table @state, -3
+      base = index(-1).as?(String)
+      LibLua.set_top @state, -4
+
+      {base, type}
+    end
   end
 end

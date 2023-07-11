@@ -1,6 +1,6 @@
 module Lua
   enum Type
-    NONE = -1
+    NONE            = -1
     NIL
     BOOLEAN
     LIGHT_USER_DATA

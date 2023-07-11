@@ -78,7 +78,7 @@ module Lua
       when .errmem?    then raise MemoryError.new message, traceback
       when .errerr?    then raise ErrorHandlerError.new message, traceback
       when .errfile?   then raise FileError.new message, traceback
-      else raise Error.new message, traceback
+      else                  raise Error.new message, traceback
       end
     end
 

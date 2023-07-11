@@ -26,18 +26,27 @@ lib LibLua
   fun new_state = luaL_newstate : State
   fun version = lua_version(l : State) : LibC::Double
   fun close = lua_close(l : State) : Void
+  fun l_ref = luaL_ref(l : State, idx : LibC::Int) : LibC::Int
+  fun l_unref = luaL_unref(l : State, idx : LibC::Int, ref : LibC::Int) : Void
 
   fun push_nil = lua_pushnil(l : State) : Void
   fun push_integer = lua_pushinteger(l : State, i : LibC::Long) : Void
   fun push_number = lua_pushnumber(l : State, n : LibC::Double) : Void
   fun push_string = lua_pushstring(l : State, s : LibC::Char*) : Void
   fun push_bool = lua_pushboolean(l : State, b : LibC::Int) : Void
+  fun push_value = lua_pushvalue(l : State, idx : LibC::Int) : Void
 
   fun is_number = lua_isnumber(l : State, idx : LibC::Int) : LibC::Int
   fun is_string = lua_isstring(l : State, idx : LibC::Int) : LibC::Int
   fun is_c_function = lua_iscfunction(l : State, idx : LibC::Int) : LibC::Int
   fun is_userdata = lua_isuserdata(l : State, idx : LibC::Int) : LibC::Int
   fun is_yieldable = lua_isyieldable(l : State) : LibC::Int
+
+  fun get_top = lua_gettop(l : State) : LibC::Int
+  fun set_top = lua_settop(l : State, idx : LibC::Int) : Void
+  fun insert = lua_insert(l : State, idx : LibC::Int) : Void
+  fun replace = lua_replace(l : State, idx : LibC::Int) : Void
+  fun remove = lua_remove(l : State, idx : LibC::Int) : Void
 
   fun type = lua_type(l : State, idx : LibC::Int) : LibC::Int
   fun typename = lua_typename(l : State, tp : LibC::Int) : LibC::Char*

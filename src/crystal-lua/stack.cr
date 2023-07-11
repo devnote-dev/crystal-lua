@@ -3,6 +3,7 @@ module Lua
     REGISTRY_INDEX = -1_001_000
 
     @state : LibLua::State
+    @error_handler : Function?
     getter? closed : Bool
 
     def self.new(& : self ->) : self
@@ -31,6 +32,54 @@ module Lua
 
     def finalize
       close
+    end
+
+    def run(buf : String, name : String? = nil)
+      call = Call.new LibLua.l_load_bufferx(@state, buf, buf.size, name || buf.strip, nil)
+      error call unless call.ok?
+      call_and_return size
+    end
+
+    def call_and_return(pos : Int, *args)
+      error_pos = load_error_handler pos
+      pos += 1 if error_pos != 0
+      args.each { |a| push a }
+
+      call = Call.new LibLua.pcallk(@state, args.size, -1, error_pos, 0, nil)
+      error call unless call.ok?
+
+      items = (pos..size).map { pop }
+      items.size > 1 ? items : items[0]
+    ensure
+      remove if error_pos != 0
+    end
+
+    def set_error_handler(chunk : String) : Nil
+      res = run chunk, "error handler"
+      raise "Error handler must return a function" unless res.is_a? Function
+      @error_handler = res
+    end
+
+    def load_error_handler(pos : Int)
+      if handler = @error_handler
+        handler.copy_to_stack
+        LibLua.rotate @state, pos, -1
+
+        pos
+      else
+        0
+      end
+    end
+
+    protected def error(call : Call, message : String? = nil, traceback : String? = nil) : NoReturn
+      case call
+      when .errrun?    then raise RuntimeError.new message, traceback
+      when .errsyntax? then raise SyntaxError.new message, traceback
+      when .errmem?    then raise MemoryError.new message, traceback
+      when .errerr?    then raise ErrorHandlerError.new message, traceback
+      when .errfile?   then raise FileError.new message, traceback
+      else raise Error.new message, traceback
+      end
     end
 
     def <<(object : _) : Nil

@@ -1,9 +1,8 @@
 module Lua
   class Error < Exception
-    getter traceback : String?
+  end
 
-    def initialize(@message : String?, @traceback : String? = nil)
-    end
+  class FailError < Error
   end
 
   class RuntimeError < Error
@@ -15,7 +14,7 @@ module Lua
   class MemoryError < Error
   end
 
-  class ErrorHandlerError < Error
+  class MessageHandlerError < Error
   end
 
   class FileError < Error

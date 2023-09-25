@@ -40,6 +40,16 @@ lib LibLua
     OPLE
   end
 
+  enum StatusCode : Int32
+    OK
+    YIELD
+    ERRRUN
+    ERRSYNTAX
+    ERRMEM
+    ERRERR
+    ERRFILE
+  end
+
   struct VaListTag
     gp_offset : LibC::UInt
     fp_offset : LibC::UInt
@@ -47,8 +57,9 @@ lib LibLua
     reg_save_area : Void*
   end
 
-  # Auxillary
-  fun newstate = lua_newstate(fn : Alloc, ud : Void*) : State
+  # General
+  fun newstate = lua_newstate : State
+  # fun newstate = lua_newstate(fn : Alloc, ud : Void*) : State
   fun close = lua_close(l : State) : Void
   fun load = lua_load(l : State, reader : Reader, data : Void*, chunkname : LibC::Char*, mode : LibC::Char*) : LibC::Int
   fun dump = lua_dump(l : State, writer : Writer, data : Void*, strip : LibC::Int) : LibC::Int
@@ -195,4 +206,6 @@ lib LibLua
   fun setiuservalue = lua_setiuservalue(l : State, index : LibC::Int, num : LibC::Int) : LibC::Int
   fun callk = lua_callk(l : State, nargs : LibC::Int, nresults : LibC::Int, ctx : KContext, fn : KFunction) : Void
   fun pcallk = lua_pcallk(l : State, nresults : LibC::Int, errfunc : LibC::Int, ctx : KContext, dn : KFunction) : LibC::Int
+
+  # TODO: Auxilliary (luaL_*)
 end

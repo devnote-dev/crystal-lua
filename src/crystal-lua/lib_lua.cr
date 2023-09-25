@@ -1,4 +1,8 @@
-@[Link("lua")]
+{% if flag?(:win32) %}
+  @[Link("#{__DIR__}\\..\\..\\ext\\build\\lua-5.4.4\\Release\\lua_static")]
+{% else %}
+  @[Link("lua")]
+{% end %}
 lib LibLua
   LUA_IDSIZE = 60
 

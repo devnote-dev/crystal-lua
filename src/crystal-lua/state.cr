@@ -34,10 +34,8 @@ module Lua
     def open_library(libs : Library) : Nil
       {% for name in %i(base coroutine table io os string utf8 math debug package) %}
         if libs.{{ name.id }}? && !@library.{{ name.id }}?
-          unless (code = LibLua.open_{{ name.id }}(@state)) == 0
-            raise Error.from_status(code, "Failed to open library: {{ name.id }}")
-          end
-          @library &= {{ name }}
+          _ = LibLua.open_{{ name.id }}(@state)
+          @library |= {{ name }}
         end
       {% end %}
     end

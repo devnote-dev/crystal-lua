@@ -11,12 +11,16 @@ module Lua
       when .errfile?
         FileError.new message
       else
-        FailError.new message
+        FailError.new message, code
       end
     end
   end
 
   class FailError < Error
+    getter code : Int32?
+
+    def initialize(@message : String, @code : Int32?)
+    end
   end
 
   class RuntimeError < Error

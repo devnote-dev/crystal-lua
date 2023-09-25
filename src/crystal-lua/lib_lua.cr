@@ -58,8 +58,9 @@ lib LibLua
   end
 
   # General
-  fun newstate = lua_newstate : State
-  # fun newstate = lua_newstate(fn : Alloc, ud : Void*) : State
+  fun newstate = luaL_newstate : State
+  # fun newstate = luaL_newstate(fn : Alloc, ud : Void*) : State
+
   fun close = lua_close(l : State) : Void
   fun load = lua_load(l : State, reader : Reader, data : Void*, chunkname : LibC::Char*, mode : LibC::Char*) : LibC::Int
   fun dump = lua_dump(l : State, writer : Writer, data : Void*, strip : LibC::Int) : LibC::Int

@@ -11,3 +11,7 @@ development_dependencies:
   ameba:
     github: crystal-ameba/ameba
     version: ~> 1.5.0
+
+scripts:
+  # Geode bug: can't execute cmd script with multiple lines
+  postinstall@windows: scripts\install.cmd

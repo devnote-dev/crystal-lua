@@ -4,7 +4,7 @@ lib LibLua
 
   type State = Void*
 
-  alias Number = LibC::LongLong
+  alias Number = LibC::Double
   alias Integer = LibC::LongLong
   alias Unsigned = LibC::ULongLong
   alias KContext = LibC::SizeT
@@ -183,8 +183,8 @@ lib LibLua
   # Other/ungrouped
   fun absindex = lua_absindex(l : State, index : LibC::Int) : LibC::Int
   fun arith = lua_arith(l : State, op : Arith) : Void
-  fun rawequal = lua_rawequal(l : State, x1 : LibC::Int, x2 : LibC::Int, op : LibC::Int) : LibC::Int
-  fun compare = lua_compare(l : State, x1 : LibC::Int, x2 : LibC::Int, op : LibC::Int) : LibC::Int
+  fun rawequal = lua_rawequal(l : State, x1 : LibC::Int, x2 : LibC::Int, op : Compare) : LibC::Int
+  fun compare = lua_compare(l : State, x1 : LibC::Int, x2 : LibC::Int, op : Compare) : LibC::Int
   fun getglobal = lua_getglobal(l : State, name : LibC::Char*) : LibC::Int
   fun gettable = lua_gettable(l : State, index : LibC::Int) : LibC::Int
   fun getfield = lua_getfield(l : State, index : LibC::Int, key : LibC::Char*) : LibC::Int

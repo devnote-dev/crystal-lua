@@ -65,6 +65,22 @@ module Lua
       @closed = false
     end
 
+    def at_panic(&block : LibLua::CFunction) : LibLua::CFunction
+      LibLua.atpanic(@state, block)
+    end
+
+    def set_warn_function(&block : LibLua::WarnFunction) : Nil
+      LibLua.setwarnf(@state, block, nil)
+    end
+
+    def version : Float64
+      LibLua.version(@state)
+    end
+
+    def warning(message : String, continue : Bool = false) : Nil
+      LibLua.warning(@state, message, continue)
+    end
+
     def open_library(libs : Library) : Nil
       {% for name in %i(base coroutine table io os string utf8 math debug package) %}
         if libs.{{ name.id }}? && !@library.{{ name.id }}?

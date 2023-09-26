@@ -101,7 +101,7 @@ module Lua
       when Type::Nil, Type::None
         Any.new nil
       when .boolean?
-        Any.new LibLua.toboolean(@state, pos) == 1
+        Any.new LibLua.toboolean(@state, pos) != 0
         # when .light_userdata?
         #   ref = Reference.new self, LibLua.topointer(@state, pos)
         #   Any.new ref

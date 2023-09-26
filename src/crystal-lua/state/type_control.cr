@@ -5,11 +5,11 @@ module Lua
     end
 
     def is_c_function?(index : Int32) : Bool
-      LibLua.iscfunction(@state, index) == 1
+      LibLua.iscfunction(@state, index) != 0
     end
 
     def is_integer?(index : Int32) : Bool
-      LibLua.isinteger(@state, index) == 1
+      LibLua.isinteger(@state, index) != 0
     end
 
     def is_none?(index : Int32) : Bool
@@ -22,11 +22,11 @@ module Lua
     end
 
     def is_number?(index : Int32) : Bool
-      LibLua.isnumber(@state, index) == 1
+      LibLua.isnumber(@state, index) != 0
     end
 
     def is_string?(index : Int32) : Bool
-      LibLua.isstring(@state, index) == 1
+      LibLua.isstring(@state, index) != 0
     end
 
     def is_table?(index : Int32) : Bool
@@ -34,15 +34,15 @@ module Lua
     end
 
     def is_userdata?(index : Int32) : Bool
-      LibLua.isuserdata(@state, index) == 1
+      LibLua.isuserdata(@state, index) != 0
     end
 
     def is_yieldable?(index : Int32) : Bool
-      LibLua.isyieldable(@state, index) == 1
+      LibLua.isyieldable(@state, index) != 0
     end
 
     def to_boolean(index : Int32) : Bool
-      LibLua.toboolean(@state, index) == 1
+      LibLua.toboolean(@state, index) != 0
     end
 
     def to_c_function(index : Int32) : LibLua::CFunction

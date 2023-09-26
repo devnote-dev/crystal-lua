@@ -26,7 +26,7 @@ module Lua
       # end
       # @state = LibLua.newstate(alloc, alloc.pointer)
 
-      @state = LibLua.newstate
+      @state = LibLua.l_newstate
       @library = :none
       @closed = false
     end

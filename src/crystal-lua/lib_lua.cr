@@ -4,8 +4,6 @@
   @[Link("lua")]
 {% end %}
 lib LibLua
-  LUA_IDSIZE = 60
-
   type State = Void*
 
   alias Number = LibC::Double
@@ -81,19 +79,6 @@ lib LibLua
   fun status = lua_status(l : State) : LibC::Int
 
   # Stack Control
-  fun gettop = lua_gettop(l : State) : LibC::Int
-  fun settop = lua_settop(l : State, index : LibC::Int) : Void
-  fun rotate = lua_rotate(l : State, index : LibC::Int, num : LibC::Int) : Void
-  fun copy = lua_copy(l : State, from : LibC::Int, to : LibC::Int) : Void
-  fun checkstack = lua_checkstack(l : State, num : LibC::Int) : LibC::Int
-  fun next = lua_next(l : State, index : LibC::Int) : LibC::Int
-  fun concat = lua_concat(l : State, index : LibC::Int) : Void
-  fun len = lua_len(l : State, index : LibC::Int) : Void
-  fun xmove = lua_xmove(l : State, to : State, num : LibC::Int) : Void
-  fun type = lua_type(l : State, index : LibC::Int) : LibC::Int
-  fun typename = lua_typename(l : State, index : LibC::Int) : LibC::Char*
-  fun toclose = lua_toclose(l : State, index : LibC::Int) : Void
-
   fun pushvalue = lua_pushvalue(l : State, index : LibC::Int) : Void
   fun pushnil = lua_pushnil(l : State) : Void
   fun pushnumber = lua_pushnumber(l : State, num : Number) : Void
@@ -107,37 +92,74 @@ lib LibLua
   fun pushlightuserdata = lua_pushlightuserdata(l : State, ptr : Void*) : Void
   fun pushthread = lua_pushthread(l : State) : LibC::Int
 
+  fun absindex = lua_absindex(l : State, index : LibC::Int) : LibC::Int
+  fun arith = lua_arith(l : State, op : Arith) : Void
+  fun call = lua_call(l : State, nargs : LibC::Int, nresults : LibC::Int) : Void
+  fun callk = lua_callk(l : State, nargs : LibC::Int, nresults : LibC::Int, ctx : KContext, fn : KFunction) : Void
+  fun checkstack = lua_checkstack(l : State, num : LibC::Int) : LibC::Int
+  fun compare = lua_compare(l : State, x1 : LibC::Int, x2 : LibC::Int, op : Compare) : LibC::Int
+  fun concat = lua_concat(l : State, index : LibC::Int) : Void
+  fun copy = lua_copy(l : State, from : LibC::Int, to : LibC::Int) : Void
+  fun createtable = lua_createtable(l : State, narr : LibC::Int, nrec : LibC::Int) : Void
+  fun getfield = lua_getfield(l : State, index : LibC::Int, key : LibC::Char*) : LibC::Int
+  fun getglobal = lua_getglobal(l : State, name : LibC::Char*) : LibC::Int
+  fun geti = lua_geti(l : State, index : LibC::Int, int : Integer) : LibC::Int
+  fun getiuservalue = lua_getiuservalue(l : State, index : LibC::Int, num : LibC::Int) : LibC::Int
+  fun getmetatable = lua_getmetatable(l : State, index : LibC::Int) : LibC::Int
+  fun gettable = lua_gettable(l : State, index : LibC::Int) : LibC::Int
+  fun gettop = lua_gettop(l : State) : LibC::Int
+  fun len = lua_len(l : State, index : LibC::Int) : Void
+  fun next = lua_next(l : State, index : LibC::Int) : LibC::Int
+  fun newuserdatauv = lua_newuserdatauv(l : State, size : LibC::SizeT, nuvalue : LibC::Int) : Void*
+  fun pcallk = lua_pcallk(l : State, nresults : LibC::Int, errfunc : LibC::Int, ctx : KContext, dn : KFunction) : LibC::Int
+  fun rawequal = lua_rawequal(l : State, x1 : LibC::Int, x2 : LibC::Int, op : Compare) : LibC::Int
+  fun rawget = lua_rawget(l : State, index : LibC::Int) : LibC::Int
+  fun rawgeti = lua_rawgeti(l : State, index : LibC::Int, int : Integer) : LibC::Int
+  fun rawgetp = lua_rawgetp(l : State, index : LibC::Int, ptr : Void*) : LibC::Int
+  fun rawlen = lua_rawlen(l : State, index : LibC::Int) : Unsigned
+  fun rawseti = lua_rawseti(l : State, index : LibC::Int, num : Integer) : Void
+  fun rawsetp = lua_rawsetp(l : State, index : LibC::Int, ptr : Void*) : Void
+  fun rotate = lua_rotate(l : State, index : LibC::Int, num : LibC::Int) : Void
+  fun setfield = lua_setfield(l : State, index : LibC::Int, key : LibC::Char*) : Void
+  fun setglobal = lua_setglobal(l : State, name : LibC::Char*) : Void
+  fun seti = lua_seti(l : State, index : LibC::Int, int : Integer) : Void
+  fun setiuservalue = lua_setiuservalue(l : State, index : LibC::Int, num : LibC::Int) : LibC::Int
+  fun setmetatable = lua_setmetatable(l : State, index : LibC::Int) : LibC::Int
+  fun settable = lua_settable(l : State, index : LibC::Int) : Void
+  fun settop = lua_settop(l : State, index : LibC::Int) : Void
+  fun toclose = lua_toclose(l : State, index : LibC::Int) : Void
+  fun type = lua_type(l : State, index : LibC::Int) : LibC::Int
+  fun typename = lua_typename(l : State, index : LibC::Int) : LibC::Char*
+
   # Type Control
-  fun isnumber = lua_isnumber(l : State, index : LibC::Int) : LibC::Int
-  fun isstring = lua_isstring(l : State, index : LibC::Int) : LibC::Int
   fun iscfunction = lua_iscfunction(l : State, index : LibC::Int) : LibC::Int
   fun isinteger = lua_isinteger(l : State, index : LibC::Int) : LibC::Int
+  fun isnumber = lua_isnumber(l : State, index : LibC::Int) : LibC::Int
+  fun isstring = lua_isstring(l : State, index : LibC::Int) : LibC::Int
   fun isuserdata = lua_isuserdata(l : State, index : LibC::Int) : LibC::Int
   fun isyieldable = lua_isyieldable(l : State) : LibC::Int
 
-  fun tonumberx = lua_tonumberx(l : State, index : LibC::Int, isnum : LibC::Int*) : Number
-  fun tointegerx = lua_tointegerx(l : State, index : LibC::Int, isnum : LibC::Int*) : Integer
   fun toboolean = lua_toboolean(l : State, index : LibC::Int) : LibC::Int
-  fun tolstring = lua_tolstring(l : State, index : LibC::Int, len : LibC::SizeT*) : LibC::Char*
   fun tocfunction = lua_tocfunction(l : State, index : LibC::Int) : CFunction
-  fun touserdata = lua_touserdata(l : State, index : LibC::Int) : Void*
-  fun tothread = lua_tothread(l : State, index : LibC::Int) : State
+  fun tointegerx = lua_tointegerx(l : State, index : LibC::Int, isnum : LibC::Int*) : Integer
+  fun tolstring = lua_tolstring(l : State, index : LibC::Int, len : LibC::SizeT*) : LibC::Char*
+  fun tonumberx = lua_tonumberx(l : State, index : LibC::Int, isnum : LibC::Int*) : Number
   fun topointer = lua_topointer(l : State, index : LibC::Int) : Void*
+  fun tothread = lua_tothread(l : State, index : LibC::Int) : State
+  fun touserdata = lua_touserdata(l : State, index : LibC::Int) : Void*
 
+  fun numbertointeger = lua_numbertointeger(num : Number, int : Integer*) : LibC::Int
   fun stringtonumber = lua_stringtonumber(l : State, str : LibC::Char*) : LibC::SizeT
 
-  # Closure Control
-  fun getupvalue = lua_getupvalue(l : State, index : LibC::Int, num : LibC::Int) : LibC::Char*
-  fun setupvalue = lua_setupvalue(l : State, index : LibC::Int, num : LibC::Int) : LibC::Char*
-  fun upvalueid = lua_upvalueid(l : State, index : LibC::Int, num : LibC::Int) : Void*
-  fun upvaluejoin = lua_upvaluejoin(l : State, x1 : LibC::Int, n1 : LibC::Int, x2 : LibC::Int, n2 : LibC::Int) : Void
-
   # Coroutine Control
-  fun yieldk = lua_yieldk(l : State, nresults : LibC::Int, ctx : KContext, fn : KFunction) : LibC::Int
   fun resume = lua_resume(l : State, from : State, nargs : LibC::Int, nresults : LibC::Int*) : LibC::Int
+  fun xmove = lua_xmove(l : State, to : State, num : LibC::Int) : Void
+  fun yield = lua_yield(from : State, to : State, num : LibC::Int) : LibC::Int
+  fun yieldk = lua_yieldk(l : State, nresults : LibC::Int, ctx : KContext, fn : KFunction) : LibC::Int
 
   # Memory Management
   fun gc = lua_gc(l : State, what : LibC::Int, ...) : LibC::Int
+  fun getextraspace = lua_getextraspace(l : State) : Void*
   fun getallocf = lua_getallocf(l : State, ud : Void**) : Alloc
   fun setallocf = lua_setallocf(l : State, fn : Alloc, ud : Void*) : Void
   fun closeslot = lua_closeslot(l : State, index : LibC::Int) : Void
@@ -171,46 +193,21 @@ lib LibLua
     istailcall : LibC::Char
     ftransfer : LibC::UShort
     ntransfer : LibC::UShort
-    short_src : LibC::Char[LUA_IDSIZE]
+    short_src : LibC::Char[60]
   end
 
-  fun getstack = lua_getstack(l : State, level : LibC::Int, ar : Debug*) : LibC::Int
+  fun gethook = lua_gethook(l : State) : Hook
+  fun gethookcount = lua_gethookcount(l : State) : LibC::Int
+  fun gethookmask = lua_gethookmask(l : State) : LibC::Int
   fun getinfo = lua_getinfo(l : State, what : LibC::Char*, ar : Debug*) : LibC::Int
   fun getlocal = lua_getlocal(l : State, ar : Debug*, num : LibC::Int) : LibC::Char*
-  fun setlocal = lua_setlocal(l : State, ar : Debug*, num : LibC::Int) : LibC::Char*
-  fun gethook = lua_gethook(l : State) : Hook
+  fun getstack = lua_getstack(l : State, level : LibC::Int, ar : Debug*) : LibC::Int
+  fun getupvalue = lua_getupvalue(l : State, index : LibC::Int, num : LibC::Int) : LibC::Char*
   fun sethook = lua_sethook(l : State, fn : Hook, mask : LibC::Int, count : LibC::Int) : Void
-  fun gethookmask = lua_gethookmask(l : State) : LibC::Int
-  fun gethookcount = lua_gethookcount(l : State) : LibC::Int
-  fun setcstacklimit = lua_setcstacklimit(l : State, limit : LibC::Int) : LibC::Int
-
-  # Other/ungrouped
-  fun absindex = lua_absindex(l : State, index : LibC::Int) : LibC::Int
-  fun arith = lua_arith(l : State, op : Arith) : Void
-  fun rawequal = lua_rawequal(l : State, x1 : LibC::Int, x2 : LibC::Int, op : Compare) : LibC::Int
-  fun compare = lua_compare(l : State, x1 : LibC::Int, x2 : LibC::Int, op : Compare) : LibC::Int
-  fun getglobal = lua_getglobal(l : State, name : LibC::Char*) : LibC::Int
-  fun gettable = lua_gettable(l : State, index : LibC::Int) : LibC::Int
-  fun getfield = lua_getfield(l : State, index : LibC::Int, key : LibC::Char*) : LibC::Int
-  fun geti = lua_geti(l : State, index : LibC::Int, int : Integer) : LibC::Int
-  fun rawget = lua_rawget(l : State, index : LibC::Int) : LibC::Int
-  fun rawgeti = lua_rawgeti(l : State, index : LibC::Int, int : Integer) : LibC::Int
-  fun rawgetp = lua_rawgetp(l : State, index : LibC::Int, ptr : Void*) : LibC::Int
-  fun createtable = lua_createtable(l : State, narr : LibC::Int, nrec : LibC::Int) : Void
-  fun newuserdatauv = lua_newuserdatauv(l : State, size : LibC::SizeT, nuvalue : LibC::Int) : Void*
-  fun getmetatable = lua_getmetatable(l : State, index : LibC::Int) : LibC::Int
-  fun getiuservalue = lua_getiuservalue(l : State, index : LibC::Int, num : LibC::Int) : LibC::Int
-  fun setglobal = lua_setglobal(l : State, name : LibC::Char*) : Void
-  fun settable = lua_settable(l : State, index : LibC::Int) : Void
-  fun setfield = lua_setfield(l : State, index : LibC::Int, key : LibC::Char*) : Void
-  fun seti = lua_seti(l : State, index : LibC::Int, int : Integer) : Void
-  fun rawlen = lua_rawlen(l : State, index : LibC::Int) : Unsigned
-  fun rawseti = lua_rawseti(l : State, index : LibC::Int, num : Integer) : Void
-  fun rawsetp = lua_rawsetp(l : State, index : LibC::Int, ptr : Void*) : Void
-  fun setmetatable = lua_setmetatable(l : State, index : LibC::Int) : LibC::Int
-  fun setiuservalue = lua_setiuservalue(l : State, index : LibC::Int, num : LibC::Int) : LibC::Int
-  fun callk = lua_callk(l : State, nargs : LibC::Int, nresults : LibC::Int, ctx : KContext, fn : KFunction) : Void
-  fun pcallk = lua_pcallk(l : State, nresults : LibC::Int, errfunc : LibC::Int, ctx : KContext, dn : KFunction) : LibC::Int
+  fun setlocal = lua_setlocal(l : State, ar : Debug*, num : LibC::Int) : LibC::Char*
+  fun setupvalue = lua_setupvalue(l : State, index : LibC::Int, num : LibC::Int) : LibC::Char*
+  fun upvalueid = lua_upvalueid(l : State, index : LibC::Int, num : LibC::Int) : Void*
+  fun upvaluejoin = lua_upvaluejoin(l : State, x1 : LibC::Int, n1 : LibC::Int, x2 : LibC::Int, n2 : LibC::Int) : Void
 
   # TODO: Auxilliary (luaL_*)
 end

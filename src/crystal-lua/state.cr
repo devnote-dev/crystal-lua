@@ -30,7 +30,7 @@ module Lua
   end
 
   enum Type : Int8
-    None = -1
+    None          = -1
     Nil
     Boolean
     LightUserdata
@@ -47,16 +47,21 @@ module Lua
     getter library : Library
     getter? closed : Bool
 
-    def initialize
+    def self.new
       # TODO: should Lua be hooked up to Crystal's GC?
       #
       # alloc = ->(data : Void*, ptr : Void*, osize : LibC::SizeT, nsize : LibC::SizeT) do
       #   Pointer(Void).null
       # end
-      # @state = LibLua.newstate(alloc, alloc.pointer)
+      # state = LibLua.newstate(alloc, alloc.pointer)
 
-      @state = LibLua.l_newstate
-      @library = :none
+      state = LibLua.l_newstate
+      raise MemoryError.new "Failed to init new state" if state.null?
+
+      new state
+    end
+
+    def initialize(@state : LibLua::State, @library : Library = :none)
       @closed = false
     end
 

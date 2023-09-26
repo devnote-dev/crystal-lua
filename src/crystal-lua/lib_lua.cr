@@ -139,6 +139,7 @@ lib LibLua
   fun typename = lua_typename(l : State, type : Lua::Type) : LibC::Char*
 
   # Type Control
+  fun isboolean = lua_isboolean(l : State, index : LibC::Int) : LibC::Int
   fun iscfunction = lua_iscfunction(l : State, index : LibC::Int) : LibC::Int
   fun isinteger = lua_isinteger(l : State, index : LibC::Int) : LibC::Int
   fun isnone = lua_isnone(l : State, index : LibC::Int) : LibC::Int

@@ -1,3 +1,5 @@
+require "./state/*"
+
 module Lua
   @[Flags]
   enum Library

@@ -135,8 +135,8 @@ lib LibLua
   fun remove = lua_remove(l : State, index : LibC::Int) : Void
   fun replace = lua_replace(l : State, index : LibC::Int) : Void
   fun rotate = lua_rotate(l : State, index : LibC::Int, num : LibC::Int) : Void
-  fun type = lua_type(l : State, index : LibC::Int) : LibC::Int
-  fun typename = lua_typename(l : State, type : LibC::Int) : LibC::Char*
+  fun type = lua_type(l : State, index : LibC::Int) : Lua::Type
+  fun typename = lua_typename(l : State, type : Lua::Type) : LibC::Char*
 
   # Type Control
   fun iscfunction = lua_iscfunction(l : State, index : LibC::Int) : LibC::Int
@@ -155,10 +155,10 @@ lib LibLua
   fun tointeger = lua_tointeger(l : State, index : LibC::Int) : Integer
   fun tointegerx = lua_tointegerx(l : State, index : LibC::Int, isnum : LibC::Int*) : Integer
   fun tolstring = lua_tolstring(l : State, index : LibC::Int, len : LibC::SizeT*) : LibC::Char*
-  fun tonumber = lua_tonumber(l : State, index : LibC::Int) : Number
+  # fun tonumber = lua_tonumber(l : State, index : LibC::Int) : Number
   fun tonumberx = lua_tonumberx(l : State, index : LibC::Int, isnum : LibC::Int*) : Number
   fun topointer = lua_topointer(l : State, index : LibC::Int) : Void*
-  fun tostring = lua_tostring(l : State, index : LibC::Int) : LibC::Char*
+  # fun tostring = lua_tostring(l : State, index : LibC::Int) : LibC::Char*
   fun tothread = lua_tothread(l : State, index : LibC::Int) : State
   fun touserdata = lua_touserdata(l : State, index : LibC::Int) : Void*
 

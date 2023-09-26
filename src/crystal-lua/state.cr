@@ -13,6 +13,33 @@ module Lua
     Package
   end
 
+  enum Mode : UInt8
+    Binary
+    Text
+    BinaryText
+
+    def to_s : String
+      case self
+      in .binary?      then "b"
+      in .text?        then "t"
+      in .binary_text? then "bt"
+      end
+    end
+  end
+
+  enum Type : Int8
+    None = -1
+    Nil
+    Boolean
+    LightUserdata
+    Number
+    String
+    Table
+    Function
+    Userdata
+    Thread
+  end
+
   class State
     @state : LibLua::State
     getter library : Library
@@ -42,6 +69,39 @@ module Lua
 
     def size : Int32
       LibLua.gettop(@state)
+    end
+
+    def index(pos : Int32) : Any?
+      return nil if pos == 0
+
+      case type_at pos
+      when Type::Nil, Type::None
+        Any.new nil
+      when .boolean?
+        Any.new LibLua.toboolean(@state, pos) == 1
+        # when .light_userdata?
+        #   ref = Reference.new self, LibLua.topointer(@state, pos)
+        #   Any.new ref
+      when .number?
+        Any.new LibLua.tonumberx(@state, pos, nil)
+      when .string?
+        Any.new String.new(LibLua.tolstring(@state, pos, nil))
+        # when .table?
+        #   Any.new Table.new(self, reference(pos))
+        # when .function?
+        #   Any.new Function.new(self, reference(pos))
+        # when .userdata?
+        #   base, type = crystal_type_info pos
+        #   if !base.nil? && type == "callable"
+        #     Any.new Callable.new(self, LibLua.touserdata(@state, pos), type)
+        #   else
+        #     Any.new Reference.new(self, LibLua.topointer(@state, pos))
+        #   end
+        # when .thread?
+        #   Any.new Coroutine.new(State.new(LibLua.tothread(@state, pos), @library))
+      else
+        raise Error.new "Unknown Lua type: #{typename(pos)}"
+      end
     end
 
     def top : Any?

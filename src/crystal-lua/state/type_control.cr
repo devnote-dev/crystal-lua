@@ -1,7 +1,7 @@
 module Lua
   class State
     def is_boolean?(index : Int32) : Bool
-      LibLua.isboolean(@state, index) == 1
+      LibLua.type(@state, index).boolean?
     end
 
     def is_c_function?(index : Int32) : Bool
@@ -13,11 +13,12 @@ module Lua
     end
 
     def is_none?(index : Int32) : Bool
-      LibLua.isnone(@state, index) == 1
+      LibLua.type(@state, index).none?
     end
 
     def is_none_or_nil?(index : Int32) : Bool
-      LibLua.isnoneornil(@state, index) == 1
+      type = LibLua.type(@state, index)
+      type.none? || type == Type::Nil
     end
 
     def is_number?(index : Int32) : Bool
@@ -29,7 +30,7 @@ module Lua
     end
 
     def is_table?(index : Int32) : Bool
-      LibLua.istable(@state, index) == 1
+      LibLua.type(@state, index).table?
     end
 
     def is_userdata?(index : Int32) : Bool

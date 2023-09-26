@@ -79,12 +79,9 @@ lib LibLua
 
   fun pushboolean = lua_pushboolean(l : State, bool : LibC::Int) : Void
   fun pushcclosure = lua_pushcclosure(l : State, fn : CFunction, num : LibC::Int) : Void
-  fun pushcfunction = lua_pushcfunction(l : State, fn : CFunction) : Void
   fun pushfstring = lua_pushfstring(l : State, fmt : LibC::Char*, ...) : LibC::Char*
-  fun pushglobaltable = lua_pushglobaltable(l : State) : Void
   fun pushinteger = lua_pushinteger(l : State, int : Integer) : Void
   fun pushlightuserdata = lua_pushlightuserdata(l : State, ptr : Void*) : Void
-  fun pushliteral = lua_pushliteral(l : State, str : LibC::Char*) : LibC::Char*
   fun pushlstring = lua_pushlstring(l : State, str : LibC::Char*, len : LibC::SizeT) : LibC::Char*
   fun pushnil = lua_pushnil(l : State) : Void
   fun pushnumber = lua_pushnumber(l : State, num : Number) : Void
@@ -128,38 +125,27 @@ lib LibLua
   fun gettop = lua_gettop(l : State) : LibC::Int
   fun len = lua_len(l : State, index : LibC::Int) : Void
   fun next = lua_next(l : State, index : LibC::Int) : LibC::Int
-  fun newtable = lua_newtable(l : State) : Void
   fun newuserdatauv = lua_newuserdatauv(l : State, size : LibC::SizeT, nuvalue : LibC::Int) : Void*
   fun pcallk = lua_pcallk(l : State, nresults : LibC::Int, errfunc : LibC::Int, ctx : KContext, dn : KFunction) : LibC::Int
-  fun register = lua_register(l : State, name : LibC::Char*, fn : CFunction) : Void
-  fun remove = lua_remove(l : State, index : LibC::Int) : Void
-  fun replace = lua_replace(l : State, index : LibC::Int) : Void
   fun rotate = lua_rotate(l : State, index : LibC::Int, num : LibC::Int) : Void
   fun type = lua_type(l : State, index : LibC::Int) : Lua::Type
   fun typename = lua_typename(l : State, type : Lua::Type) : LibC::Char*
 
   # Type Control
-  fun isboolean = lua_isboolean(l : State, index : LibC::Int) : LibC::Int
   fun iscfunction = lua_iscfunction(l : State, index : LibC::Int) : LibC::Int
   fun isinteger = lua_isinteger(l : State, index : LibC::Int) : LibC::Int
-  fun isnone = lua_isnone(l : State, index : LibC::Int) : LibC::Int
-  fun isnoneornil = lua_isnoneornil(l : State, index : LibC::Int) : LibC::Int
   fun isnumber = lua_isnumber(l : State, index : LibC::Int) : LibC::Int
   fun isstring = lua_isstring(l : State, index : LibC::Int) : LibC::Int
-  fun istable = lua_istable(l : State, index : LibC::Int) : LibC::Int
   fun isuserdata = lua_isuserdata(l : State, index : LibC::Int) : LibC::Int
   fun isyieldable = lua_isyieldable(l : State) : LibC::Int
 
   fun toboolean = lua_toboolean(l : State, index : LibC::Int) : LibC::Int
   fun tocfunction = lua_tocfunction(l : State, index : LibC::Int) : CFunction
   fun toclose = lua_toclose(l : State, index : LibC::Int) : Void
-  fun tointeger = lua_tointeger(l : State, index : LibC::Int) : Integer
   fun tointegerx = lua_tointegerx(l : State, index : LibC::Int, isnum : LibC::Int*) : Integer
   fun tolstring = lua_tolstring(l : State, index : LibC::Int, len : LibC::SizeT*) : LibC::Char*
-  # fun tonumber = lua_tonumber(l : State, index : LibC::Int) : Number
   fun tonumberx = lua_tonumberx(l : State, index : LibC::Int, isnum : LibC::Int*) : Number
   fun topointer = lua_topointer(l : State, index : LibC::Int) : Void*
-  # fun tostring = lua_tostring(l : State, index : LibC::Int) : LibC::Char*
   fun tothread = lua_tothread(l : State, index : LibC::Int) : State
   fun touserdata = lua_touserdata(l : State, index : LibC::Int) : Void*
 
@@ -176,7 +162,6 @@ lib LibLua
   fun closeslot = lua_closeslot(l : State, index : LibC::Int) : Void
   fun gc = lua_gc(l : State, what : LibC::Int, ...) : LibC::Int
   fun getallocf = lua_getallocf(l : State, ud : Void**) : Alloc
-  fun getextraspace = lua_getextraspace(l : State) : Void*
   fun setallocf = lua_setallocf(l : State, fn : Alloc, ud : Void*) : Void
 
   # Libraries

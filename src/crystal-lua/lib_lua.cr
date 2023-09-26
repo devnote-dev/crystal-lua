@@ -5,7 +5,6 @@
 {% end %}
 lib LibLua
   type State = Void*
-  type Buffer = Void*
 
   alias Number = LibC::Double
   alias Integer = LibC::LongLong
@@ -20,6 +19,34 @@ lib LibLua
   alias WarnFunction = Void*, LibC::Char*, LibC::Int -> Void
   alias Hook = State, Debug -> Void
 
+  enum StatusCode : Int32
+    OK
+    YIELD
+    ERRRUN
+    ERRSYNTAX
+    ERRMEM
+    ERRERR
+    ERRFILE
+  end
+
+  # General
+  fun atpanic = lua_atpanic(l : State, fn : CFunction) : CFunction
+  fun close = lua_close(l : State) : Void
+  fun dump = lua_dump(l : State, writer : Writer, data : Void*, strip : LibC::Int) : LibC::Int
+  fun error = lua_error(l : State) : LibC::Int
+  fun load = lua_load(l : State, reader : Reader, data : Void*, chunkname : LibC::Char*, mode : LibC::Char*) : LibC::Int
+  fun newstate = lua_newstate(fn : Alloc, ud : Void*) : State
+  fun setwarnf = lua_setwarnf(l : State, fn : WarnFunction, ud : Void*) : Void
+  fun version = lua_version(l : State) : Number
+  fun warning = lua_warning(l : State, msg : LibC::Char*, tocont : LibC::Int) : Void
+
+  # Threading
+  fun closethread = lua_closethread(l : State, thread : State) : LibC::Int
+  fun newthread = lua_newthread(l : State) : State
+  fun resetthread = lua_resetthread(l : State) : LibC::Int
+  fun status = lua_status(l : State) : LibC::Int
+
+  # Stack Control
   enum Arith : UInt32
     OPADD
     OPSUB
@@ -43,16 +70,6 @@ lib LibLua
     OPLE
   end
 
-  enum StatusCode : Int32
-    OK
-    YIELD
-    ERRRUN
-    ERRSYNTAX
-    ERRMEM
-    ERRERR
-    ERRFILE
-  end
-
   struct VaListTag
     gp_offset : LibC::UInt
     fp_offset : LibC::UInt
@@ -60,31 +77,6 @@ lib LibLua
     reg_save_area : Void*
   end
 
-  struct Reg
-    name : LibC::Char*
-    func : CFunction
-  end
-
-  # General
-  fun newstate = luaL_newstate : State
-  # fun newstate = luaL_newstate(fn : Alloc, ud : Void*) : State
-
-  fun atpanic = lua_atpanic(l : State, fn : CFunction) : CFunction
-  fun close = lua_close(l : State) : Void
-  fun dump = lua_dump(l : State, writer : Writer, data : Void*, strip : LibC::Int) : LibC::Int
-  fun error = lua_error(l : State) : LibC::Int
-  fun load = lua_load(l : State, reader : Reader, data : Void*, chunkname : LibC::Char*, mode : LibC::Char*) : LibC::Int
-  fun setwarnf = lua_setwarnf(l : State, fn : WarnFunction, ud : Void*) : Void
-  fun version = lua_version(l : State) : Number
-  fun warning = lua_warning(l : State, msg : LibC::Char*, tocont : LibC::Int) : Void
-
-  # Threading
-  fun closethread = lua_closethread(l : State, thread : State) : LibC::Int
-  fun newthread = lua_newthread(l : State) : State
-  fun resetthread = lua_resetthread(l : State) : LibC::Int
-  fun status = lua_status(l : State) : LibC::Int
-
-  # Stack Control
   fun pushboolean = lua_pushboolean(l : State, bool : LibC::Int) : Void
   fun pushcclosure = lua_pushcclosure(l : State, fn : CFunction, num : LibC::Int) : Void
   fun pushcfunction = lua_pushcfunction(l : State, fn : CFunction) : Void
@@ -232,6 +224,13 @@ lib LibLua
   fun upvaluejoin = lua_upvaluejoin(l : State, x1 : LibC::Int, n1 : LibC::Int, x2 : LibC::Int, n2 : LibC::Int) : Void
 
   # Auxilliary
+  type Buffer = Void*
+
+  struct Reg
+    name : LibC::Char*
+    func : CFunction
+  end
+
   fun l_buffaddr = luaL_bufferaddr(b : Buffer) : LibC::Char*
   fun l_buffinit = luaL_buffinit(l : State, buff : Buffer) : Void
   fun l_bufflen = luaL_bufflen(b : Buffer) : LibC::SizeT
@@ -274,7 +273,7 @@ lib LibLua
   # fun l_newlib = luaL_newlib(l : State, reg : Array(Reg)) : Void
   # fun l_newlibtable = luaL_newlibtable(l : State, reg : Array(Reg)) : Void
   fun l_newmetatable = luaL_newmetatable(l : State, name : LibC::Char*) : LibC::Int
-  # fun l_newstate = luaL_newstate : State
+  fun l_newstate = luaL_newstate : State
   fun l_openlibs = luaL_openlibs(l : State) : Void
   fun l_prepbuffer = luaL_prepbuffer(b : Buffer, size : LibC::SizeT) : LibC::Char*
   fun l_pushfail = luaL_pushfail(l : State) : Void

@@ -18,20 +18,20 @@ module Lua
     end
 
     {% for base in %w(8 16 32 64 128) %}
-      def as_i{{base.id}} : Int{{ base.id }}
-        @raw.as(Int{{ base.id }})
+      def to_i{{base.id}} : Int{{ base.id }}
+        @raw.as(Float64).to_i{{ base.id }}
       end
 
-      def as_i{{base.id}}? : Int{{ base.id }}?
-        @raw.as?(Int{{ base.id }})
+      def to_i{{base.id}}? : Int{{ base.id }}?
+        @raw.as?(Float64).try &.to_i{{ base.id }}
       end
 
-      def as_u{{base.id}} : UInt{{ base.id }}
-        @raw.as(UInt{{ base.id }})
+      def to_u{{base.id}} : UInt{{ base.id }}
+        @raw.as(Float64).to_u{{ base.id }}
       end
 
-      def as_u{{base.id}}? : UInt{{ base.id }}?
-        @raw.as?(UInt{{ base.id }})
+      def to_u{{base.id}}? : UInt{{ base.id }}?
+        @raw.as?(Float64).try &.to_u{{ base.id }}
       end
     {% end %}
 

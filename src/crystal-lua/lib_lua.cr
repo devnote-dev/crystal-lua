@@ -5,6 +5,7 @@
 {% end %}
 lib LibLua
   type State = Void*
+  type Buffer = Void*
 
   alias Number = LibC::Double
   alias Integer = LibC::LongLong
@@ -57,6 +58,11 @@ lib LibLua
     fp_offset : LibC::UInt
     overflow_arg_area : Void*
     reg_save_area : Void*
+  end
+
+  struct Reg
+    name : LibC::Char*
+    func : CFunction
   end
 
   # General
@@ -225,5 +231,64 @@ lib LibLua
   fun upvalueid = lua_upvalueid(l : State, index : LibC::Int, num : LibC::Int) : Void*
   fun upvaluejoin = lua_upvaluejoin(l : State, x1 : LibC::Int, n1 : LibC::Int, x2 : LibC::Int, n2 : LibC::Int) : Void
 
-  # TODO: Auxilliary (luaL_*)
+  # Auxilliary
+  fun l_buffaddr = luaL_bufferaddr(b : Buffer) : LibC::Char*
+  fun l_buffinit = luaL_buffinit(l : State, buff : Buffer) : Void
+  fun l_bufflen = luaL_bufflen(b : Buffer) : LibC::SizeT
+  fun l_buffinitsize = luaL_buffinitsize(l : State, buff : Buffer, size : LibC::SizeT) : LibC::Char*
+  fun l_buffsub = luaL_buffsub(b : Buffer, num : LibC::Int) : Void
+
+  fun l_checkany = luaL_checkany(l : State, arg : LibC::Int) : Void
+  fun l_checkinteger = luaL_checkinteger(l : State, arg : LibC::Int) : Integer
+  fun l_checklstring = luaL_checklstring(l : State, arg : LibC::Int) : LibC::Char*
+  fun l_checknumber = luaL_checknumber(l : State, arg : LibC::Int) : Number
+  fun l_checkoption = luaL_checkoption(l : State, arg : LibC::Int, _def : LibC::Char*, list : LibC::Char**) : LibC::Int
+  fun l_checkstack = luaL_checkstack(l : State, size : LibC::Int, msg : LibC::Char*) : Void
+  fun l_checkstring = luaL_checkstring(l : State, arg : LibC::Int) : LibC::Char*
+  fun l_checktype = luaL_checktype(l : State, arg : LibC::Int, type : LibC::Int) : Void
+  fun l_checkudata = luaL_checkudata(l : State, arg : LibC::Int, name : LibC::Char*) : Void
+  fun l_checkversion = luaL_checkversion(l : State) : Void
+
+  fun l_loadbuffer = luaL_loadbuffer(l : State, buff : LibC::Char*, size : LibC::SizeT, name : LibC::Char*) : LibC::Int
+  fun l_loadbufferx = luaL_loadbufferx(l : State, buff : LibC::Char*, size : LibC::SizeT, name : LibC::Char*, mode : LibC::Char*) : LibC::Int
+  fun l_loadfile = luaL_loadfile(l : State, name : LibC::Char*) : LibC::Int
+  fun l_loadfilex = luaL_loadfilex(l : State, name : LibC::Char*, mode : LibC::Char*) : LibC::Int
+  fun l_loadstring = luaL_loadstring(l : State, str : LibC::Char*) : LibC::Int
+
+  fun l_optinteger = luaL_optinteger(l : State, arg : LibC::Int, d : Integer) : Integer
+  fun l_optlstring = luaL_optlstring(l : State, arg : LibC::Int, d : LibC::Char*, len : LibC::SizeT*) : LibC::Char*
+  fun l_optnumber = luaL_optnumber(l : State, arg : LibC::Int, d : Number) : Number
+  fun l_optstring = luaL_optstring(l : State, arg : LibC::Int, d : LibC::Char*) : LibC::Char*
+
+  fun l_callmeta = luaL_callmeta(l : State, obj : LibC::Int, name : LibC::Char*) : LibC::Int
+  fun l_dofile = luaL_dofile(l : State, name : LibC::Char*) : LibC::Int
+  fun l_dostring = luaL_dostring(l : State, str : LibC::Char*) : LibC::Int
+  fun l_error = luaL_error(l : State, fmt : LibC::Char*, ...) : LibC::Int
+  fun l_execresult = luaL_execresult(l : State, stat : LibC::Int) : LibC::Int
+  fun l_fileresult = luaL_fileresult(l : State, stat : LibC::Int, name : LibC::Char*) : LibC::Int
+  fun l_getmetafield = luaL_getmetafield(l : State, obj : LibC::Int, name : LibC::Char*) : LibC::Int
+  fun l_getmetatable = luaL_getmetatable(l : State, name : LibC::Char*) : LibC::Int
+  fun l_getsubtable = luaL_getsubtable(l : State, index : LibC::Int, name : LibC::Char*) : LibC::Int
+  fun l_gsub = luaL_gsub(l : State, str : LibC::Char*, pat : LibC::Char*, re : LibC::Char*) : LibC::Char*
+  fun l_len = luaL_len(l : State, index : LibC::Int) : Integer
+  # fun l_newlib = luaL_newlib(l : State, reg : Array(Reg)) : Void
+  # fun l_newlibtable = luaL_newlibtable(l : State, reg : Array(Reg)) : Void
+  fun l_newmetatable = luaL_newmetatable(l : State, name : LibC::Char*) : LibC::Int
+  # fun l_newstate = luaL_newstate : State
+  fun l_openlibs = luaL_openlibs(l : State) : Void
+  fun l_prepbuffer = luaL_prepbuffer(b : Buffer, size : LibC::SizeT) : LibC::Char*
+  fun l_pushfail = luaL_pushfail(l : State) : Void
+  fun l_pushresult = luaL_pushresult(b : Buffer) : Void
+  fun l_pushresultsize = luaL_pushresultsize(b : Buffer, size : LibC::SizeT) : Void
+  fun l_ref = luaL_ref(l : State, index : LibC::Int) : LibC::Int
+  fun l_requiref = luaL_requiref(l : State, name : LibC::Char*, fn : CFunction, global : LibC::Int) : Void
+  fun l_setfuncs = luaL_setfuncs(l : State, reg : Reg*, nup : LibC::Int) : Void
+  fun l_setmetatable = luaL_setmetatable(l : State, name : LibC::Char*) : Void
+  fun l_testudata = luaL_testudata(l : State, arg : LibC::Int, name : LibC::Char*) : Void
+  fun l_tolstring = luaL_tolstring(l : State, index : LibC::Int, len : LibC::SizeT) : LibC::Char*
+  fun l_traceback = luaL_traceback(l : State, l1 : State, msg : LibC::Char*, level : LibC::Int) : Void
+  fun l_typeerror = luaL_typeerror(l : State, arg : LibC::Int, name : LibC::Char*) : LibC::Int
+  fun l_typename = luaL_typename(l : State, index : LibC::Int) : LibC::Char*
+  fun l_unref = luaL_unref(l : State, index : LibC::Int, ref : LibC::Int) : Void
+  fun l_where = luaL_where(l : State, level : LibC::Int) : Void
 end

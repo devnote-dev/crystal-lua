@@ -234,9 +234,7 @@ lib LibLua
   fun l_checkudata = luaL_checkudata(l : State, arg : LibC::Int, name : LibC::Char*) : Void
   fun l_checkversion = luaL_checkversion(l : State) : Void
 
-  fun l_loadbuffer = luaL_loadbuffer(l : State, buff : LibC::Char*, size : LibC::SizeT, name : LibC::Char*) : LibC::Int
   fun l_loadbufferx = luaL_loadbufferx(l : State, buff : LibC::Char*, size : LibC::SizeT, name : LibC::Char*, mode : LibC::Char*) : LibC::Int
-  fun l_loadfile = luaL_loadfile(l : State, name : LibC::Char*) : LibC::Int
   fun l_loadfilex = luaL_loadfilex(l : State, name : LibC::Char*, mode : LibC::Char*) : LibC::Int
   fun l_loadstring = luaL_loadstring(l : State, str : LibC::Char*) : LibC::Int
 

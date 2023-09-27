@@ -102,15 +102,14 @@ module Lua
         Any.new nil
       when .boolean?
         Any.new LibLua.toboolean(@state, pos) != 0
-        # when .light_userdata?
-        #   ref = Reference.new self, LibLua.topointer(@state, pos)
-        #   Any.new ref
+      when .light_userdata?
+        Any.new Reference.new(self, LibLua.topointer(@state, pos))
       when .number?
         Any.new LibLua.tonumberx(@state, pos, nil)
       when .string?
         Any.new String.new(LibLua.tolstring(@state, pos, nil))
-        # when .table?
-        #   Any.new Table.new(self, reference(pos))
+      when .table?
+        Any.new Table.new(self, reference(pos))
         # when .function?
         #   Any.new Function.new(self, reference(pos))
         # when .userdata?

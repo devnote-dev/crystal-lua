@@ -109,7 +109,6 @@ lib LibLua
 
   fun absindex = lua_absindex(l : State, index : LibC::Int) : LibC::Int
   fun arith = lua_arith(l : State, op : Arith) : Void
-  fun call = lua_call(l : State, nargs : LibC::Int, nresults : LibC::Int) : Void
   fun callk = lua_callk(l : State, nargs : LibC::Int, nresults : LibC::Int, ctx : KContext, fn : KFunction) : Void
   fun checkstack = lua_checkstack(l : State, num : LibC::Int) : LibC::Int
   fun compare = lua_compare(l : State, x1 : LibC::Int, x2 : LibC::Int, op : Compare) : LibC::Int

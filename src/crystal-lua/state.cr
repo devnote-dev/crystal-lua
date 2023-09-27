@@ -74,17 +74,49 @@ module Lua
       LibLua.warning(@state, message, continue)
     end
 
-    def open(libs : Library) : Nil
-      {% for name in %i(base coroutine table io os string utf8 math debug package) %}
-        if libs.{{ name.id }}? && !@library.{{ name.id }}?
-          _ = LibLua.open_{{ name.id }}(@state)
-          @library |= {{ name }}
-        end
-      {% end %}
-    end
-
     def size : Int32
       LibLua.gettop(@state)
+    end
+
+    def protected_call(num_args : Int32, num_results : Int32, msg_handler : Int32) : Nil
+      code = LibLua.pcallk(@state, num_args, num_results, msg_handler, 0, nil)
+      raise Error.from_status(code) unless code == 0
+    end
+
+    def protected_call(num_args : Int32, num_results : Int32, msg_handler : Int32,
+                       context : LibLua::KContext, fn : LibLua::KFunction) : Nil
+      code = LibLua.pcallk(@state, num_args, num_results, msg_handler, context, fn)
+      raise Error.from_status(code) unless code == 0
+    end
+
+    def type_at(pos : Int32) : Type
+      LibLua.type(@state, pos)
+    end
+
+    def typename(pos : Int32) : String
+      typename type_at(pos)
+    end
+
+    def typename(type : Type) : String
+      String.new LibLua.typename(@state, type)
+    end
+
+    private def crystal_type_info(pos : Int32) : {String?, String}
+      if LibLua.getmetatable(@state, pos) == 0
+        raise Error.new "Value at #{pos} does not have a metatable"
+      end
+
+      LibLua.pushstring(@state, "__name")
+      LibLua.gettable(@state, -2)
+      type = index!(-1).as_s
+
+      LibLua.pushstring(@state, "__crystal_type")
+      LibLua.gettable(@state, -3)
+      base = index!(-1).as_s?
+
+      LibLua.settop(@state, -4)
+
+      {base, type}
     end
 
     def index(pos : Int32) : Any?
@@ -135,34 +167,13 @@ module Lua
       LibLua.settop(@state, -2)
     end
 
-    def type_at(pos : Int32) : Type
-      LibLua.type(@state, pos)
-    end
-
-    def typename(pos : Int32) : String
-      typename type_at(pos)
-    end
-
-    def typename(type : Type) : String
-      String.new LibLua.typename(@state, type)
-    end
-
-    private def crystal_type_info(pos : Int32) : {String?, String}
-      if LibLua.getmetatable(@state, pos) == 0
-        raise Error.new "Value at #{pos} does not have a metatable"
-      end
-
-      LibLua.pushstring(@state, "__name")
-      LibLua.gettable(@state, -2)
-      type = index!(-1).as_s
-
-      LibLua.pushstring(@state, "__crystal_type")
-      LibLua.gettable(@state, -3)
-      base = index!(-1).as_s?
-
-      LibLua.settop(@state, -4)
-
-      {base, type}
+    def open(libs : Library) : Nil
+      {% for name in %i(base coroutine table io os string utf8 math debug package) %}
+        if libs.{{ name.id }}? && !@library.{{ name.id }}?
+          _ = LibLua.open_{{ name.id }}(@state)
+          @library |= {{ name }}
+        end
+      {% end %}
     end
 
     def close : Nil

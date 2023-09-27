@@ -15,17 +15,6 @@ module Lua
       raise Error.from_status(code) unless code == 0
     end
 
-    def protected_call(num_args : Int32, num_results : Int32, msg_handler : Int32) : Nil
-      code = LibLua.pcallk(@state, num_args, num_results, msg_handler, 0, nil)
-      raise Error.from_status(code) unless code == 0
-    end
-
-    def protected_call(num_args : Int32, num_results : Int32, msg_handler : Int32,
-                       context : LibLua::KContext, fn : LibLua::KFunction) : Nil
-      code = LibLua.pcallk(@state, num_args, num_results, msg_handler, context, fn)
-      raise Error.from_status(code) unless code == 0
-    end
-
     def run_file(path : Path | String) : Nil
       load_file path, :binary_text
       protected_call 0, -1, 0

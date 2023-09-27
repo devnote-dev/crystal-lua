@@ -9,7 +9,7 @@ module Lua
     end
 
     def push_format(format : String, *args : _) : Nil
-      LibLua.pushfstring(@state, format, args)
+      LibLua.pushfstring(@state, format, *args)
     end
 
     def push_global_table : Nil
@@ -32,7 +32,7 @@ module Lua
       end
     end
 
-    def push_nil : Nil
+    def push(__ : Nil) : Nil
       LibLua.pushnil(@state)
     end
 

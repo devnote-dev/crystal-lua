@@ -5,7 +5,13 @@ module Lua
     end
 
     def push(value : Proc) : Nil
-      LibLua.pushcclosure(@state, value, 0)
+      if value.closure?
+        LibLua.pushlightuserdata(@state, value.closure_data)
+        LibLua.pushlightuserdata(@state, value.pointer)
+        LibLua.pushcclosure(@state, ->Lua.__call(LibLua::State), 0)
+      else
+        LibLua.pushcclosure(@state, value, 0)
+      end
     end
 
     def push_format(format : String, *args : _) : Nil
@@ -65,14 +71,6 @@ module Lua
         push value
         LibLua.settable(@state, -3)
       end
-    end
-
-    private def call(state : LibLua::State) : Int32
-      data = LibLua.topointer(@state, -1_001_000 - 1)
-      ptr = LibLua.topointer(@state, -1_001_000 - 2)
-      proc = Proc(LibLua::State, Int32).new(ptr, data)
-
-      proc.call(@state)
     end
   end
 end

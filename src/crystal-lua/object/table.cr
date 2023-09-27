@@ -7,8 +7,8 @@ module Lua
         @state.push_nil
 
         until LibLua.next(@state, pos) == 0
-          key = @state.index(-2).as(Any)
-          value = @state.index(-1).as(Any)
+          key = @state.index!(-2)
+          value = @state.index!(-1)
 
           yield({key, value})
           @state.remove

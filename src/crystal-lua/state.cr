@@ -126,6 +126,10 @@ module Lua
       end
     end
 
+    def index!(pos : Int32) : Any
+      index(pos) || raise IndexError.new "No value at index #{pos}"
+    end
+
     def top : Any?
       index size
     end
@@ -157,11 +161,11 @@ module Lua
 
       LibLua.pushstring(@state, "__name")
       LibLua.gettable(@state, -2)
-      type = index(-1).as_s
+      type = index!(-1).as_s
 
       LibLua.pushstring(@state, "__crystal_type")
       LibLua.gettable(@state, -3)
-      base = index(-1).as_s?
+      base = index!(-1).as_s?
 
       LibLua.settop(@state, -4)
 

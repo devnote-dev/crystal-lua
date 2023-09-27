@@ -33,5 +33,14 @@ module Lua
         elements[0]
       end
     end
+
+    def reference(pos : Int32) : Int32
+      LibLua.pushvalue(@state, pos)
+      LibLua.l_ref(@state, -1_001_000)
+    end
+
+    def dereference(ref : Int32) : Nil
+      LibLua.l_unref(@state, -1_001_000, ref)
+    end
   end
 end

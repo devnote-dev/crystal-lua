@@ -78,6 +78,24 @@ module Lua
       LibLua.gettop(@state)
     end
 
+    def set_global(name : String) : Nil
+      LibLua.setglobal(@state, name)
+    end
+
+    def call(num_args : Int32, num_results : Int32) : Nil
+      code = LibLua.callk(@state, num_args, num_results, 0, nil)
+      raise Error.from_status(code) unless code == 0
+    end
+
+    def call(num_args : Int32, num_results : Int32, context : LibLua::KContext, fn : LibLua::KFunction) : Nil
+      code = LibLua.callk(@state, num_args, num_results, context, fn)
+      raise Error.from_status(code) unless code == 0
+    end
+
+    def next(index : Int32) : Bool
+      LibLua.next(@state, index) != 0
+    end
+
     def protected_call(num_args : Int32, num_results : Int32, msg_handler : Int32) : Nil
       code = LibLua.pcallk(@state, num_args, num_results, msg_handler, 0, nil)
       raise Error.from_status(code) unless code == 0
@@ -87,6 +105,10 @@ module Lua
                        context : LibLua::KContext, fn : LibLua::KFunction) : Nil
       code = LibLua.pcallk(@state, num_args, num_results, msg_handler, context, fn)
       raise Error.from_status(code) unless code == 0
+    end
+
+    def rotate(index : Int32, times : Int32) : Nil
+      LibLua.rotate(@state, index, times)
     end
 
     def type_at(pos : Int32) : Type

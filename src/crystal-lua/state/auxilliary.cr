@@ -23,7 +23,7 @@ module Lua
 
     private def call_and_return(pos : Int32, *args)
       args.each { |arg| push arg }
-      code = LibLua.pcallk(@state, args.size, -1, 0, 0, nil)
+      code = LibLua.pcallk(@state, args.size, -1, 0, nil)
       raise Error.from_status(code) unless code == 0
 
       elements = (pos..size).map { pop }
@@ -32,6 +32,16 @@ module Lua
       else
         elements[0]
       end
+    end
+
+    def run_file(path : Path | String) : Nil
+      code = LibLua.l_dofile(@state, path.to_s)
+      raise Error.from_status(code) unless code == 0
+    end
+
+    def run_string(source : String) : Nil
+      code = LibLua.l_dostring(@state, source)
+      raise Error.from_status(code) unless code == 0
     end
 
     def reference(pos : Int32) : Int32

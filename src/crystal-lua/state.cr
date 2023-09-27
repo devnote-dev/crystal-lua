@@ -110,8 +110,8 @@ module Lua
         Any.new String.new(LibLua.tolstring(@state, pos, nil))
       when .table?
         Any.new Table.new(self, reference(pos))
-        # when .function?
-        #   Any.new Function.new(self, reference(pos))
+      when .function?
+        Any.new Function.new(self, reference(pos))
         # when .userdata?
         #   base, type = crystal_type_info pos
         #   if !base.nil? && type == "callable"

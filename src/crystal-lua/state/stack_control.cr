@@ -5,13 +5,7 @@ module Lua
     end
 
     def push(value : Proc) : Nil
-      if value.closure?
-        LibLua.pushlightuserdata(@state, value.closure_data)
-        LibLua.pushlightuserdata(@state, value.pointer)
-        LibLua.pushcclosure(@state, ->call(LibLua::State), 2)
-      else
-        LibLua.pushcclosure(@state, value, 0)
-      end
+      LibLua.pushcclosure(@state, value, 0)
     end
 
     def push_format(format : String, *args : _) : Nil

@@ -54,6 +54,25 @@ module Lua
       LibLua.pushvalue(@state, index)
     end
 
+    def push(value : Array) : Nil
+      hash = value.map_with_index { |e, i| {i + 1, e} }.to_h
+      pp! hash
+      push hash, hash.size, 0
+    end
+
+    def push(value : Hash) : Nil
+      push value, 0, value.size
+    end
+
+    private def push(hash : Hash, narr : Int32, nrec : Int32) : Nil
+      LibLua.createtable(@state, narr, nrec)
+      hash.each do |key, value|
+        push key
+        push value
+        LibLua.settable(@state, -3)
+      end
+    end
+
     private def call(state : LibLua::State) : Int32
       data = LibLua.topointer(@state, -1_001_000 - 1)
       ptr = LibLua.topointer(@state, -1_001_000 - 2)

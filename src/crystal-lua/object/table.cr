@@ -4,9 +4,9 @@ module Lua
 
     def each(& : {Any, Any} ->)
       preload do |pos|
-        @state.push_nil
+        @state.push nil
 
-        until LibLua.next(@state, pos) == 0
+        while @state.next pos
           key = @state.index!(-2)
           value = @state.index!(-1)
 

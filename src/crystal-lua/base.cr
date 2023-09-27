@@ -55,12 +55,14 @@ module Lua
       end
     end
 
-    def []=(index : Any::Type, value : Any::Type)
+    def []=(index : Any::Type, value : Any::Type) : Any::Type
       preload do |pos|
         @state.push index
         @state.push value
         LibLua.settable(@state, pos)
       end
+
+      value
     end
 
     def to_h : Hash(Any, Any)

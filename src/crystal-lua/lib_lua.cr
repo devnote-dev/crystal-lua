@@ -126,7 +126,7 @@ lib LibLua
   fun len = lua_len(l : State, index : LibC::Int) : Void
   fun next = lua_next(l : State, index : LibC::Int) : LibC::Int
   fun newuserdatauv = lua_newuserdatauv(l : State, size : LibC::SizeT, nuvalue : LibC::Int) : Void*
-  fun pcallk = lua_pcallk(l : State, nresults : LibC::Int, errfunc : LibC::Int, ctx : KContext, dn : KFunction) : LibC::Int
+  fun pcallk = lua_pcallk(l : State, nargs : LibC::Int, nresults : LibC::Int, errfunc : LibC::Int, ctx : KContext, dn : KFunction) : LibC::Int
   fun rotate = lua_rotate(l : State, index : LibC::Int, num : LibC::Int) : Void
   fun type = lua_type(l : State, index : LibC::Int) : Lua::Type
   fun typename = lua_typename(l : State, type : Lua::Type) : LibC::Char*

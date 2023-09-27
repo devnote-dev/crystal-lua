@@ -1,8 +1,10 @@
 module Lua
   class Function < Lua::Object
-    def call(*args : Any::Type) : Array(Any)
+    def call(*args : Any::Type) : Any?
       preload do |pos|
-        @state.call_and_return pos, args
+        args.each { |arg| @state.push arg }
+        @state.protected_call args.size, 1, 0
+        @state.pop
       end
     end
   end

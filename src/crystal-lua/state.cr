@@ -48,13 +48,6 @@ module Lua
     getter? closed : Bool
 
     def self.new
-      # TODO: should Lua be hooked up to Crystal's GC?
-      #
-      # alloc = ->(data : Void*, ptr : Void*, osize : LibC::SizeT, nsize : LibC::SizeT) do
-      #   Pointer(Void).null
-      # end
-      # state = LibLua.newstate(alloc, alloc.pointer)
-
       state = LibLua.l_newstate
       raise MemoryError.new "Failed to init new state" if state.null?
 
@@ -81,7 +74,7 @@ module Lua
       LibLua.warning(@state, message, continue)
     end
 
-    def open_library(libs : Library) : Nil
+    def open(libs : Library) : Nil
       {% for name in %i(base coroutine table io os string utf8 math debug package) %}
         if libs.{{ name.id }}? && !@library.{{ name.id }}?
           _ = LibLua.open_{{ name.id }}(@state)

@@ -1,26 +1,30 @@
 module Lua
   class Error < Exception
-    def self.from_status(code : Int32, message : String)
+    getter code : Int32?
+
+    def self.from_status(code : Int32, message : String? = nil)
       case LibLua::StatusCode.new(code)
       when .errrun?
-        RuntimeError.new message
+        RuntimeError.new code, message
       when .errsyntax?
-        SyntaxError.new message
+        SyntaxError.new code, message
       when .errmem?
-        MemoryError.new message
+        MemoryError.new code, message
       when .errfile?
-        FileError.new message
+        FileError.new code, message
       else
-        FailError.new message, code
+        FailError.new code, message
       end
+    end
+
+    def initialize(@message : String?)
+    end
+
+    def initialize(@code : Int32, @message : String?)
     end
   end
 
   class FailError < Error
-    getter code : Int32?
-
-    def initialize(@message : String, @code : Int32?)
-    end
   end
 
   class RuntimeError < Error

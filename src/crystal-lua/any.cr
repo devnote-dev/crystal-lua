@@ -1,6 +1,6 @@
 module Lua
   struct Any
-    alias Type = Nil | Bool | Number::Primitive | String # | Reference | Table | Function | Callable | Coroutine
+    alias Type = Nil | Bool | Number::Primitive | String | Reference | Table # | Function | Callable | Coroutine
 
     getter raw : Type
 
@@ -51,6 +51,22 @@ module Lua
 
     def as_s? : String?
       @raw.as?(String)
+    end
+
+    def as_ref : Reference
+      @raw.as(Reference)
+    end
+
+    def as_ref? : Reference?
+      @raw.as?(Reference)
+    end
+
+    def as_table : Table
+      @raw.as(Table)
+    end
+
+    def as_table? : Table?
+      @raw.as?(Table)
     end
   end
 end

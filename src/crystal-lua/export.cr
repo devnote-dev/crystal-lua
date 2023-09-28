@@ -29,4 +29,8 @@ module Lua
 
     proc.call(state)
   end
+
+  def self.__gc(state : LibLua::State) : Int32
+    0
+  end
 end

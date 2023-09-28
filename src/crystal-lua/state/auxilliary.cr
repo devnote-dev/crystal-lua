@@ -25,6 +25,11 @@ module Lua
       protected_call 0, -1, 0
     end
 
+    def new_metatable(name : String) : Nil
+      code = LibLua.l_newmetatable(@state, name)
+      raise Error.from_status(code) unless code == 0
+    end
+
     def reference(pos : Int32) : Int32
       LibLua.pushvalue(@state, pos)
       LibLua.l_ref(@state, -1_001_000)

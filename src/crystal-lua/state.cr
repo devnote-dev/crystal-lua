@@ -82,6 +82,14 @@ module Lua
       LibLua.setglobal(@state, name)
     end
 
+    def set_metatable(index : Int32) : Nil
+      LibLua.setmetatable(@state, index)
+    end
+
+    def set_table(index : Int32) : Nil
+      LibLua.settable(@state, index)
+    end
+
     def call(num_args : Int32, num_results : Int32) : Nil
       code = LibLua.callk(@state, num_args, num_results, 0, nil)
       raise Error.from_status(code) unless code == 0
@@ -94,6 +102,10 @@ module Lua
 
     def next(index : Int32) : Bool
       LibLua.next(@state, index) != 0
+    end
+
+    def new_userdata(size : Int32, values : Int32) : Void*
+      LibLua.newuserdatauv(@state, size, values)
     end
 
     def protected_call(num_args : Int32, num_results : Int32, msg_handler : Int32) : Nil

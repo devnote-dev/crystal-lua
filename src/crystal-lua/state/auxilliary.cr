@@ -25,6 +25,10 @@ module Lua
       protected_call 0, -1, 0
     end
 
+    def error(message : String, *args : _) : Nil
+      LibLua.l_error(@state, message, *args)
+    end
+
     def new_metatable(name : String) : Nil
       code = LibLua.l_newmetatable(@state, name)
       raise Error.from_status(code) unless code == 0

@@ -4,17 +4,21 @@ module Lua
 
   macro export_function(state, name, &block)
     {% name.raise "expected argument #2 to be a string literal" unless name.is_a?(StringLiteral) %}
-    proc = ->(st : LibLua::State) do
-      %state = Lua::State.new st
+    proc = ->(ptr : LibLua::State) do
+      %state = Lua::State.new ptr
       {% unless block.args.empty? %}
         {% for arg, index in block.args %}
           {{ arg }} = %state.index!(-{{ index + 1 }})
         {% end %}
       {% end %}
-      result = begin
-        {{ block.body }}
+      begin
+        result = begin
+          {{ block.body }}
+        end
+        %state.push result
+      rescue ex
+        %state.error ex.to_s, nil
       end
-      %state.push result
       1
     end
 

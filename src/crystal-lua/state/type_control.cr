@@ -77,8 +77,12 @@ module Lua
       State.new LibLua.tothread(@state, index)
     end
 
-    def to_userdata(index : Int32, type : T.class) : T* forall T
-      LibLua.touserdata(@state, index).as(T*)
+    def to_userdata(index : Int32) : Void*
+      LibLua.touserdata(@state, index)
+    end
+
+    def to_userdata(index : Int32, type : T.class) : T forall T
+      to_userdata(index).as(T*).value
     end
   end
 end

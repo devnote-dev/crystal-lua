@@ -92,12 +92,12 @@ module Lua
 
     def call(num_args : Int32, num_results : Int32) : Nil
       code = LibLua.callk(@state, num_args, num_results, 0, nil)
-      raise Error.from_status(code) unless code == 0
+      raise Error.from_status(code, pop!.as_s) unless code == 0
     end
 
     def call(num_args : Int32, num_results : Int32, context : LibLua::KContext, fn : LibLua::KFunction) : Nil
       code = LibLua.callk(@state, num_args, num_results, context, fn)
-      raise Error.from_status(code) unless code == 0
+      raise Error.from_status(code, pop!.as_s) unless code == 0
     end
 
     def next(index : Int32) : Bool
@@ -110,13 +110,13 @@ module Lua
 
     def protected_call(num_args : Int32, num_results : Int32, msg_handler : Int32) : Nil
       code = LibLua.pcallk(@state, num_args, num_results, msg_handler, 0, nil)
-      raise Error.from_status(code) unless code == 0
+      raise Error.from_status(code, pop!.as_s) unless code == 0
     end
 
     def protected_call(num_args : Int32, num_results : Int32, msg_handler : Int32,
                        context : LibLua::KContext, fn : LibLua::KFunction) : Nil
       code = LibLua.pcallk(@state, num_args, num_results, msg_handler, context, fn)
-      raise Error.from_status(code) unless code == 0
+      raise Error.from_status(code, pop!.as_s) unless code == 0
     end
 
     def rotate(index : Int32, times : Int32) : Nil
@@ -195,6 +195,10 @@ module Lua
 
     def pop : Any?
       top.try &.tap { remove }
+    end
+
+    def pop! : Any
+      pop || raise IndexError.new "Stack is empty"
     end
 
     def remove : Nil

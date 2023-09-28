@@ -2,17 +2,17 @@ module Lua
   class State
     def load_buffer(buf : IO, mode : Mode? = nil) : Nil
       code = LibLua.l_loadbufferx(@state, buf.gets_to_end, buf.size, nil, mode.try &.to_s)
-      raise Error.from_status(code) unless code == 0
+      raise Error.from_status(code, pop!.as_s) unless code == 0
     end
 
     def load_file(path : Path | String, mode : Mode? = nil) : Nil
       code = LibLua.l_loadfilex(@state, path.to_s, mode.try &.to_s)
-      raise Error.from_status(code) unless code == 0
+      raise Error.from_status(code, pop!.as_s) unless code == 0
     end
 
     def load_string(source : String) : Nil
       code = LibLua.l_loadstring(@state, source)
-      raise Error.from_status(code) unless code == 0
+      raise Error.from_status(code, pop!.as_s) unless code == 0
     end
 
     def run_file(path : Path | String) : Nil
@@ -31,7 +31,7 @@ module Lua
 
     def new_metatable(name : String) : Nil
       code = LibLua.l_newmetatable(@state, name)
-      raise Error.from_status(code) unless code == 0
+      raise Error.from_status(code, pop!.as_s) unless code == 0
     end
 
     def reference(pos : Int32) : Int32

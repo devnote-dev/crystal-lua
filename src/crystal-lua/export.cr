@@ -2,34 +2,23 @@ module Lua
   annotation Export
   end
 
-  alias ExportType = Nil | Bool | Number::Primitive | String | Array(ExportType) | Hash(ExportType, ExportType)
-
   macro export_function(state, name, &block)
     {% name.raise "expected argument #2 to be a string literal" unless name.is_a?(StringLiteral) %}
     proc = ->(st : LibLua::State) do
-      func = ->(
-        {% for arg in block.args %}
-          {{ arg }} : Lua::Any,
+      %state = Lua::State.new st
+      {% unless block.args.empty? %}
+        {% for arg, index in block.args %}
+          {{ arg }} = %state.index!(-{{ index + 1 }})
         {% end %}
-      ) : Lua::ExportType do
+      {% end %}
+      result = begin
         {{ block.body }}
       end
-
-      state = Lua::State.new st
-      {% if block.args.empty? %}
-        result = func.call
-      {% else %}
-        {% for arg, index in block.args %}
-          {{ arg }} = state.index!(-{{ index + 1 }})
-        {% end %}
-        result = func.call({% for arg in block.args %}{{ arg }},{% end %})
-      {% end %}
-      state.push result
+      %state.push result
       1
     end
 
-    # {{ state }}.push proc
-    LibLua.pushcclosure({{ state }}, proc, 0)
+    {{ state }}.push proc
     {{ state }}.set_global {{ name }}
   end
 

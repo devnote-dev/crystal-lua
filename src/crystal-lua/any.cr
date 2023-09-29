@@ -1,6 +1,6 @@
 module Lua
   struct Any
-    alias Type = Nil | Bool | Number::Primitive | String | Reference | Table | Function # | Callable | Coroutine
+    alias Type = Nil | Bool | Number::Primitive | String | Reference | Table | Function | Callable # | Coroutine
 
     getter raw : Type
 
@@ -75,6 +75,14 @@ module Lua
 
     def as_function? : Function?
       @raw.as?(Function)
+    end
+
+    def as_callable : Callable
+      @raw.as(Callable)
+    end
+
+    def as_callable? : Callable?
+      @raw.as?(Callable)
     end
   end
 end

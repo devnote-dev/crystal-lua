@@ -171,13 +171,13 @@ module Lua
         Any.new Table.new(self, reference(pos))
       when .function?
         Any.new Function.new(self, reference(pos))
-        # when .userdata?
-        #   base, type = crystal_type_info pos
-        #   if !base.nil? && type == "callable"
-        #     Any.new Callable.new(self, LibLua.touserdata(@state, pos), type)
-        #   else
-        #     Any.new Reference.new(self, LibLua.topointer(@state, pos))
-        #   end
+      when .userdata?
+        base, type = crystal_type_info pos
+        if !base.nil? && type == "callable"
+          Any.new to_userdata(pos, Callable)
+        else
+          Any.new Reference.new(self, to_pointer(pos))
+        end
         # when .thread?
         #   Any.new Coroutine.new(State.new(LibLua.tothread(@state, pos), @library))
       else

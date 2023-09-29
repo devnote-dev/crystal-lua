@@ -8,7 +8,7 @@ module Lua
       if value.closure?
         LibLua.pushlightuserdata(@state, value.closure_data)
         LibLua.pushlightuserdata(@state, value.pointer)
-        LibLua.pushcclosure(@state, ->Lua.__call(LibLua::State), 0)
+        LibLua.pushcclosure(@state, ->Callable.__call(LibLua::State), 0)
       else
         LibLua.pushcclosure(@state, value, 0)
       end
@@ -72,7 +72,8 @@ module Lua
     end
 
     def push(value : Callable.class) : Nil
-      new_metatable value.name
+      # TODO: should this raise an exception?
+      return unless new_metatable value.name
 
       push "__index"
       push ->Callable.__index(LibLua::State)
@@ -90,9 +91,9 @@ module Lua
       push ->value.__new(LibLua::State)
       set_table -3
 
-      state.push "__crystal_type"
-      state.push value.name
-      state.set_table -3
+      push "__crystal_type"
+      push value.name
+      set_table -3
     end
 
     private def push(hash : Hash, narr : Int32, nrec : Int32) : Nil

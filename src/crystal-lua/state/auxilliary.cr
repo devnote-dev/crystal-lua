@@ -29,9 +29,8 @@ module Lua
       LibLua.l_error(@state, message, *args)
     end
 
-    def new_metatable(name : String) : Nil
-      code = LibLua.l_newmetatable(@state, name)
-      raise Error.from_status(code, pop!.as_s) unless code == 0
+    def new_metatable(name : String) : Bool
+      LibLua.l_newmetatable(@state, name) != 0
     end
 
     def reference(pos : Int32) : Int32

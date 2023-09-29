@@ -72,8 +72,7 @@ module Lua
     end
 
     def push(value : Callable.class) : Nil
-      # TODO: should this raise an exception?
-      return unless new_metatable value.name
+      new_metatable value.name
 
       push "__index"
       push ->Callable.__index(LibLua::State)

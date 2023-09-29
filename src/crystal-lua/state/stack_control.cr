@@ -78,20 +78,12 @@ module Lua
       push ->Callable.__index(LibLua::State)
       set_table -3
 
-      push "__newindex"
-      push ->Callable.__newindex(LibLua::State)
-      set_table -3
+      # push "__newindex"
+      # push ->Callable.__newindex(LibLua::State)
+      # set_table -3
 
       push "__gc"
       push ->Callable.__gc(LibLua::State)
-      set_table -3
-
-      push "new"
-      push ->value.__new(LibLua::State)
-      set_table -3
-
-      push "__crystal_type"
-      push value.name
       set_table -3
     end
 

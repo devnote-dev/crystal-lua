@@ -25,16 +25,4 @@ module Lua
     {{ state }}.push proc
     {{ state }}.set_global {{ name }}
   end
-
-  def self.__call(state : LibLua::State) : Int32
-    data = LibLua.topointer(state, -1_001_000 - 1)
-    ptr = LibLua.topointer(state, -1_001_000 - 2)
-    proc = Proc(LibLua::State, Int32).new(ptr, data)
-
-    proc.call(state)
-  end
-
-  def self.__gc(state : LibLua::State) : Int32
-    0
-  end
 end

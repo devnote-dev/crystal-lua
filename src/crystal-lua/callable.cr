@@ -1,18 +1,16 @@
 module Lua
   module Callable
     macro included
-      {% unless @type.module? %}
-        def self.__new(ptr : LibLua::State) : Int32
-          state = Lua::State.new ptr
-          instance = allocate
+      def self.__new(ptr : LibLua::State) : Int32
+        state = Lua::State.new ptr
+        instance = allocate
 
-          instance.initialize
-          GC.add_finalizer(instance) if instance.responds_to?(:finalize)
-          state.push instance
+        instance.initialize
+        GC.add_finalizer(instance) if instance.responds_to?(:finalize)
+        state.push instance
 
-          1
-        end
-      {% end %}
+        1
+      end
 
       macro inherited
         def self.__new(ptr : LibLua::State) : Int32
@@ -108,9 +106,6 @@ module Lua
 
     def self.__gc(ptr : LibLua::State) : Int32
       0
-    end
-
-    def self.__new(ptr : LibLua::State) : Int32
     end
 
     def self.__call(state : LibLua::State) : Int32

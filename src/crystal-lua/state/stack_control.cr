@@ -56,7 +56,6 @@ module Lua
 
     def push(value : Array) : Nil
       hash = value.map_with_index { |e, i| {i + 1, e} }.to_h
-      pp! hash
       push hash, hash.size, 0
     end
 
@@ -78,12 +77,16 @@ module Lua
       push ->Callable.__index(LibLua::State)
       set_table -3
 
-      # push "__newindex"
-      # push ->Callable.__newindex(LibLua::State)
-      # set_table -3
-
       push "__gc"
       push ->Callable.__gc(LibLua::State)
+      set_table -3
+
+      push "__newindex"
+      push ->Callable.__newindex(LibLua::State)
+      set_table -3
+
+      push "new"
+      push ->value.__new(LibLua::State)
       set_table -3
     end
 

@@ -1,0 +1,9 @@
+Globs:
+  - src/**/*.cr
+  - spec/**/*.cr
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Style/PredicateName:
+  Enabled: false

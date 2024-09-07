@@ -22,7 +22,7 @@ module Lua
 
   class Function < Base
     def call(*args : Any::Type) : Any?
-      preload do |pos|
+      preload do |_|
         args.each { |arg| @state.push arg }
         @state.protected_call args.size, 1, 0
         @state.pop

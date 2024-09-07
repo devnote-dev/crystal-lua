@@ -1,17 +1,21 @@
 name: crystal-lua
-# description:
+description: A Crystal-Lua API library
 authors:
-  - Devonte W <https://github.com/devnote-dev>
+  - Devaune Whittle <https://github.com/devnote-dev>
 
 version: 0.1.0
 crystal: '>= 1.9.2'
 license: MIT
+repository: https://github.com/devnote-dev/crystal-lua
 
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
-    version: ~> 1.5.0
 
 scripts:
-  # Geode bug: can't execute cmd script with multiple lines
-  postinstall@windows: scripts\install.cmd
+  postinstall@windows: |
+    echo off
+    git clone https://github.com/walterschell/Lua --branch v5.4.4 ext
+    cd ext && mkdir build && cd build
+    cmake .. -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+    cmake --build . --config Release

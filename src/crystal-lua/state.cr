@@ -161,23 +161,23 @@ module Lua
         Any.new nil
       when .boolean?
         Any.new LibLua.toboolean(@state, pos) != 0
-      when .light_userdata?
-        Any.new Reference.new(self, LibLua.topointer(@state, pos))
+        # when .light_userdata?
+        #   Any.new Reference.new(self, LibLua.topointer(@state, pos))
       when .number?
         Any.new LibLua.tonumberx(@state, pos, nil)
       when .string?
         Any.new String.new(LibLua.tolstring(@state, pos, nil))
-      when .table?
-        Any.new Table.new(self, reference(pos))
+        # when .table?
+        #   Any.new Table.new(self, reference(pos))
       when .function?
         Any.new Function.new(self, reference(pos))
-      when .userdata?
-        base, type = crystal_type_info pos
-        if !base.nil? && type == "callable"
-          Any.new to_userdata(pos, Callable)
-        else
-          Any.new Reference.new(self, to_pointer(pos))
-        end
+        # when .userdata?
+        #   base, type = crystal_type_info pos
+        #   if !base.nil? && type == "callable"
+        #     Any.new to_userdata(pos, Callable)
+        #   else
+        #     Any.new Reference.new(self, to_pointer(pos))
+        #   end
         # when .thread?
         #   Any.new Coroutine.new(State.new(LibLua.tothread(@state, pos), @library))
       else
@@ -203,6 +203,29 @@ module Lua
 
     def remove : Nil
       LibLua.settop(@state, -2)
+    end
+
+    def create_object(type : T.class) : Nil forall T
+      create_object type.metatable, type
+    end
+
+    def create_object(name : String, type : T.class) : Nil forall T
+      {% type.raise "expected argument #2 to be ::Lua::Object" unless T < ::Lua::Object %}
+
+      LibLua.l_newmetatable(@state, name)
+      reg = type.instance_methods.map { |name, func| LibLua::Reg.new(name: name, func: func.pointer) }
+      reg << LibLua::Reg.new(name: Pointer(UInt8).null, func: Pointer(Void).null)
+
+      LibLua.l_setfuncs(@state, reg, 0)
+      LibLua.pushvalue(@state, -1)
+      LibLua.setfield(@state, -2, "__index")
+      LibLua.createtable(@state, 0, 0)
+
+      reg = type.class_methods.map { |name, func| LibLua::Reg.new(name: name, func: func.pointer) }
+      reg << LibLua::Reg.new(name: Pointer(UInt8).null, func: Pointer(Void).null)
+
+      LibLua.l_setfuncs(@state, reg, 0)
+      set_global name
     end
 
     def open(libs : Library) : Nil

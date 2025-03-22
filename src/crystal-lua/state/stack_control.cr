@@ -8,7 +8,7 @@ module Lua
       if value.closure?
         LibLua.pushlightuserdata(@state, value.closure_data)
         LibLua.pushlightuserdata(@state, value.pointer)
-        LibLua.pushcclosure(@state, ->Callable.__call(LibLua::State), 0)
+        LibLua.pushcclosure(@state, ->Lua::Object.__call(LibLua::State), 0)
       else
         LibLua.pushcclosure(@state, value, 0)
       end
@@ -63,30 +63,22 @@ module Lua
       push value, 0, value.size
     end
 
-    def push(value : Callable) : Nil
-      data = new_userdata(sizeof(UInt64*), 1).as(UInt64*)
-      data.value = value.object_id
-      push value.class
-      set_metatable -2
-    end
+    def push(value : T) : Nil forall T
+      {% T.raise "expected argument #1 to be ::Lua::Object" unless T < ::Lua::Object %}
 
-    def push(value : Callable.class) : Nil
-      new_metatable value.name
+      box = Box(T).box(value)
+      data = new_userdata(sizeof(UInt64), 1).as(UInt64*)
+      data.value = box.address
+
+      LibLua.getfield(@state, REGISTRY_INDEX, T.metatable)
+      set_metatable -1
 
       push "__index"
-      push ->Callable.__index(LibLua::State)
+      push ->Lua::Object.__index(LibLua::State)
       set_table -3
 
       push "__gc"
-      push ->Callable.__gc(LibLua::State)
-      set_table -3
-
-      push "__newindex"
-      push ->Callable.__newindex(LibLua::State)
-      set_table -3
-
-      push "new"
-      push ->value.__new(LibLua::State)
+      push ->Lua::Object.__gc(LibLua::State)
       set_table -3
     end
 

@@ -213,7 +213,7 @@ lib LibLua
 
   struct Reg
     name : LibC::Char*
-    func : CFunction
+    func : Void*
   end
 
   fun l_buffaddr = luaL_bufferaddr(b : Buffer) : LibC::Char*
@@ -249,7 +249,7 @@ lib LibLua
   fun l_execresult = luaL_execresult(l : State, stat : LibC::Int) : LibC::Int
   fun l_fileresult = luaL_fileresult(l : State, stat : LibC::Int, name : LibC::Char*) : LibC::Int
   fun l_getmetafield = luaL_getmetafield(l : State, obj : LibC::Int, name : LibC::Char*) : LibC::Int
-  fun l_getmetatable = luaL_getmetatable(l : State, name : LibC::Char*) : LibC::Int
+  # fun l_getmetatable = luaL_getmetatable(l : State, name : LibC::Char*) : LibC::Int
   fun l_getsubtable = luaL_getsubtable(l : State, index : LibC::Int, name : LibC::Char*) : LibC::Int
   fun l_gsub = luaL_gsub(l : State, str : LibC::Char*, pat : LibC::Char*, re : LibC::Char*) : LibC::Char*
   fun l_len = luaL_len(l : State, index : LibC::Int) : Integer
